@@ -52,7 +52,7 @@ namespace IdentityProvider.Services
         }
         private async Task GenerateAndStoreTokensAsync(User user)
         {
-            var (accessToken, expirationDate) = _authTokenProcessor.GenerateToken(user);
+            var (accessToken, expirationDate) =await _authTokenProcessor.GenerateToken(user);
             var (refreshToken_new, refreshTokenExpiration) = _authTokenProcessor.GenerateRefreshToken();
             user.RefreshToken = refreshToken_new;
             user.RefreshTokenExpiryTime = refreshTokenExpiration;
