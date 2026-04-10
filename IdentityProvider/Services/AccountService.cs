@@ -32,9 +32,15 @@ namespace IdentityProvider.Services
             var user = User.Create(registerRequest.Email, registerRequest.FirstName, registerRequest.LastName);
             user.PasswordHash = _userManager.PasswordHasher.HashPassword(user, registerRequest.Password);
             var result = await _userManager.CreateAsync(user);
+
             if (!result.Succeeded)
             {
                 throw new RegistrationFailedException(result.Errors.Select(e => e.Description));
+            }
+            var resultRole = await _userManager.AddToRoleAsync(user, AppRoles.Visitor);
+                if (!resultRole.Succeeded)
+                {
+                    throw new RegistrationFailedException(resultRole.Errors.Select(e => e.Description));
             }
 
         }
