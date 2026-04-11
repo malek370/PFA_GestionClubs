@@ -28,3 +28,12 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "IdentityProvider.dll"]
+
+# Commandes pour construire et exécuter le conteneur
+# docker build -t identityprovider .
+# docker run -p 8080:8080 \
+#   -e ConnectionStrings__DefaultConnection="Server=host.docker.internal;Database=IdentityProvider;User Id=sa;Password=YourPass;TrustServerCertificate=True;" \
+#   -e JwtOptions__Secret="votre-secret-de-production-suffisamment-long" \
+#   -e JwtOptions__Issuer="myapp" \
+#   -e JwtOptions__Audience="myappusers" \
+#   identityprovider
