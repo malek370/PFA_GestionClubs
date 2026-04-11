@@ -1,14 +1,24 @@
 name: IdentityProvider CI/CD Pipeline
 
 on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'IdentityProvider/**'
   pull_request:
     branches: [ "main" ]
+    paths:
+      - 'IdentityProvider/**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    if: github.head_ref == 'IdentityProvider'
+    if: github.event_name == 'push' 
     defaults:
       run:
         working-directory: IdentityProvider
@@ -117,7 +127,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.IDENTITYPROVIDER_GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_IdentityProvider_TOKEN }}
         run: |
-          dotnet-sonarscanner begin /k:"${{ secrets.SONAR_PROJECT_KEY }}" /o:"${{ secrets.SONAR_ORG_KEY }}" /d:sonar.token="${{ secrets.SONAR_IdentityProvider_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+          dotnet-sonarscanner begin /k:"malek370_PFA_GestionClubs_IdentityProvider" /o:"malek370" /d:sonar.token="${{ secrets.SONAR_IdentityProvider_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.projectBaseDir="IdentityProvider"
           dotnet build --no-restore
           dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_IdentityProvider_TOKEN }}"
 
@@ -142,4 +152,6 @@ jobs:
         with:
           context: ./IdentityProvider
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/identityprovider:latest
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/identityprovider:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/identityprovider:${{ github.sha }}
