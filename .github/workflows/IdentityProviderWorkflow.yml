@@ -5,10 +5,7 @@ on:
     branches: [ "main" ]
     paths:
       - 'IdentityProvider/**'
-  pull_request:
-    branches: [ "main" ]
-    paths:
-      - 'IdentityProvider/**'
+  
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -127,7 +124,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.IDENTITYPROVIDER_GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_IdentityProvider_TOKEN }}
         run: |
-          dotnet-sonarscanner begin /k:"malek370_PFA_GestionClubs_IdentityProvider" /o:"malek370" /d:sonar.token="${{ secrets.SONAR_IdentityProvider_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.projectBaseDir="IdentityProvider"
+          dotnet-sonarscanner begin /k:"malek370_PFA_GestionClubs_IdentityProvider" /o:"malek370" /d:sonar.token="${{ secrets.SONAR_IdentityProvider_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
           dotnet build --no-restore
           dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_IdentityProvider_TOKEN }}"
 
