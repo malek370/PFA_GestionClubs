@@ -5,7 +5,10 @@ on:
     branches: [ "main" ]
     paths:
       - 'IdentityProvider/**'
-  
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'IdentityProvider/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
