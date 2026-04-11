@@ -1,0 +1,72 @@
+[
+  {
+    "email": "admin1@platform.com",
+    "password": "Admin@123",
+    "firstName": "Alice",
+    "lastName": "Dupont",
+    "role": "PlatformAdmin"
+  },
+  {
+    "email": "admin2@platform.com",
+    "password": "Admin@123",
+    "firstName": "Jean",
+    "lastName": "Martin",
+    "role": "PlatformAdmin"
+  },
+  {
+    "email": "clubadmin1@club.com",
+    "password": "Club@123",
+    "firstName": "Sophie",
+    "lastName": "Bernard",
+    "role": "ClubAdmin"
+  },
+  {
+    "email": "clubadmin2@club.com",
+    "password": "Club@123",
+    "firstName": "Lucas",
+    "lastName": "Petit",
+    "role": "ClubAdmin"
+  },
+  {
+    "email": "member1@club.com",
+    "password": "Member@123",
+    "firstName": "Emma",
+    "lastName": "Robert",
+    "role": "ClubMember"
+  },
+  {
+    "email": "member2@club.com",
+    "password": "Member@123",
+    "firstName": "Noah",
+    "lastName": "Richard",
+    "role": "ClubMember"
+  },
+  {
+    "email": "member3@club.com",
+    "password": "Member@123",
+    "firstName": "Lina",
+    "lastName": "Durand",
+    "role": "ClubMember"
+  },
+  {
+    "email": "visitor1@mail.com",
+    "password": "Visitor@123",
+    "firstName": "Tom",
+    "lastName": "Moreau",
+    "role": "Visitor"
+  },
+  {
+    "email": "visitor2@mail.com",
+    "password": "Visitor@123",
+    "firstName": "Sarah",
+    "lastName": "Fournier",
+    "role": "Visitor"
+  },
+  {
+    "email": "chatbot@system.com",
+    "password": "Bot@123",
+    "firstName": "System",
+    "lastName": "Bot",
+    "role": "Chatbot"
+  }
+]
