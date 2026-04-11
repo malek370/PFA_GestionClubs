@@ -159,6 +159,8 @@ namespace IdentityProvider.IdentityProviderTests.Services
                 .Returns("hashed-password");
             _userManagerMock.Setup(x => x.CreateAsync(It.IsAny<User>()))
                 .ReturnsAsync(IdentityResult.Success);
+            _userManagerMock.Setup(x => x.AddToRoleAsync(It.IsAny<User>(), AppRoles.Visitor))
+    .ReturnsAsync(IdentityResult.Success);
 
             // Act
             await _sut.RegisterAsync(request);
@@ -171,6 +173,7 @@ namespace IdentityProvider.IdentityProviderTests.Services
                 u.UserName == request.Email &&
                 u.PasswordHash == "hashed-password"
             )), Times.Once);
+            _userManagerMock.Verify(x => x.AddToRoleAsync(It.IsAny<User>(), AppRoles.Visitor), Times.Once);
         }
 
         #endregion
