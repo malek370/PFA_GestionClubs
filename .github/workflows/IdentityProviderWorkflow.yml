@@ -1,15 +1,14 @@
 name: IdentityProvider CI/CD Pipeline
 
 on:
-  push:
-    branches: [ "IdentityProvider" ]
   pull_request:
-    branches: [ "IdentityProvider" ]
+    branches: [ "main" ]
 
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    if: github.head_ref == 'IdentityProvider'
     defaults:
       run:
         working-directory: IdentityProvider
