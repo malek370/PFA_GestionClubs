@@ -15,6 +15,7 @@
     <PackageReference Include="Moq" Version="4.*" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.14" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.14" />
+    <PackageReference Include="coverlet.collector" Version="6.*" />
   </ItemGroup>
 
   <ItemGroup>
