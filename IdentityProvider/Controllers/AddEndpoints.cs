@@ -25,7 +25,7 @@ namespace IdentityProvider.Controllers
             });
             app.MapGet("/api/account/protected", () => "This is a protected endpoint").RequireAuthorization();
             app.MapGet("/api/account/member", () => "This is a protected endpoint for member of a club").RequireAuthorization(AppRoles.ClubMember);
-            app.MapGet("/api/account/platformadmin", () => "This is a protected endpoint for PLATFORM ADMIN ONLY.").RequireAuthorization(AppRoles.PlatformAdmin);
+            app.MapGet("/api/account/platformadmin", () => "This is a; protected endpoint for PLATFORM ADMIN ONLY.").RequireAuthorization(AppRoles.PlatformAdmin);
         }
     }
 }
