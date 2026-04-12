@@ -16,9 +16,9 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        // Corriger le content root vers le projet principal
+        // Remonter depuis bin/Debug/net9.0 vers la racine du projet IdentityProvider
         var projectDir = Path.GetFullPath(Path.Combine(
-            Directory.GetCurrentDirectory(), "..", "..", "..", "..", "IdentityProvider"));
+            Directory.GetCurrentDirectory(), "..", "..", ".."));
 
         builder.UseContentRoot(projectDir);
 

@@ -10,32 +10,28 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="IdentityProviderTests\IdentityProvider.Tests.csproj" />
+    <Compile Remove="IdentityProviderTests\**" />
+    <Content Remove="IdentityProviderTests\**" />
+    <EmbeddedResource Remove="IdentityProviderTests\**" />
+    <None Remove="IdentityProviderTests\**" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.14" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.9" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.14" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.14" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="9.0.14" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.14">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.14" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.14" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.17.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
     <PackageReference Include="Scalar.AspNetCore" Version="2.13.21" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.17.0" />
-	  <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.*" />
-	  <PackageReference Include="xunit" Version="2.*" />
-	  <PackageReference Include="xunit.runner.visualstudio" Version="2.*" />
-	  <PackageReference Include="Moq" Version="4.*" />
-	  <InternalsVisibleTo Include="IdentityProviderTests" />
+    <InternalsVisibleTo Include="IdentityProvider.Tests" />
   </ItemGroup>
-
 
 </Project>
