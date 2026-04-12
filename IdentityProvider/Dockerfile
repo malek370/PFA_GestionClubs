@@ -1,6 +1,6 @@
-# Consultez https://aka.ms/customizecontainer pour savoir comment personnaliser votre conteneur de débogage et comment Visual Studio utilise ce Dockerfile pour générer vos images afin d’accélérer le débogage.
+# Consultez https://aka.ms/customizecontainer pour savoir comment personnaliser votre conteneur de débogage et comment Visual Studio utilise ce Dockerfile pour générer vos images afin d'accélérer le débogage.
 
-# Cet index est utilisé lors de l’exécution à partir de VS en mode rapide (par défaut pour la configuration de débogage)
+# Cet index est utilisé lors de l'exécution à partir de VS en mode rapide (par défaut pour la configuration de débogage)
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 USER $APP_UID
 WORKDIR /app
@@ -14,7 +14,18 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["IdentityProvider.csproj", "."]
 RUN dotnet restore "./IdentityProvider.csproj"
-COPY . .
+COPY Abstracts/ ./Abstracts/
+COPY Controllers/ ./Controllers/
+COPY DbContext/ ./DbContext/
+COPY Entities/ ./Entities/
+COPY Exceptions/ ./Exceptions/
+COPY Handlers/ ./Handlers/
+COPY Options/ ./Options/
+COPY Repositories/ ./Repositories/
+COPY Requests/ ./Requests/
+COPY Services/ ./Services/
+COPY appsettings.json ./
+COPY Program.cs ./
 WORKDIR "/src/."
 RUN dotnet build "./IdentityProvider.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
@@ -23,10 +34,11 @@ FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "./IdentityProvider.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
-# Cette phase est utilisée en production ou lors de l’exécution à partir de VS en mode normal (par défaut quand la configuration de débogage n’est pas utilisée)
+# Cette phase est utilisée en production ou lors de l'exécution à partir de VS en mode normal (par défaut quand la configuration de débogage n'est pas utilisée)
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+USER $APP_UID
 ENTRYPOINT ["dotnet", "IdentityProvider.dll"]
 
 # Commandes pour construire et exécuter le conteneur

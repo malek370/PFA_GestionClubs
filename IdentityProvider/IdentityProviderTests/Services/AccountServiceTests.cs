@@ -142,6 +142,30 @@ namespace IdentityProvider.IdentityProviderTests.Services
         }
 
         [Fact]
+        public async Task RegisterAsync_AddRolesFails_ThrowsRegistrationFailedException()
+        {
+            // Arrange
+            var request = new RegisterRequest
+            {
+                Email = "new@test.com",
+                Password = "Pass123!",
+                FirstName = "New",
+                LastName = "User"
+            };
+
+            _userManagerMock.Setup(x => x.Users)
+                .Returns(new List<User>().AsQueryable());
+            _passwordHasherMock.Setup(x => x.HashPassword(It.IsAny<User>(), request.Password))
+                .Returns("hashed-password");
+            _userManagerMock.Setup(x => x.CreateAsync(It.IsAny<User>()))
+                .ReturnsAsync(IdentityResult.Success);
+            _userManagerMock.Setup(x => x.AddToRoleAsync(It.IsAny<User>(), AppRoles.Visitor))
+                .ReturnsAsync(IdentityResult.Failed(new IdentityError { Description = "Error" }));
+
+            // Act & Assert
+            await Assert.ThrowsAsync<RegistrationFailedException>(() => _sut.RegisterAsync(request));
+        }
+        [Fact]
         public async Task RegisterAsync_ValidRequest_CreatesUser()
         {
             // Arrange
