@@ -124,10 +124,16 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.IDENTITYPROVIDER_GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_IdentityProvider_TOKEN }}
         run: |
-          dotnet-sonarscanner begin /k:"malek370_PFA_GestionClubs_IdentityProvider" /o:"malek370" /d:sonar.token="${{ secrets.SONAR_IdentityProvider_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
+          dotnet-sonarscanner begin /k:"malek370_PFA_GestionClubs_IdentityProvider" /o:"malek370" /d:sonar.token="${{ secrets.SONAR_IdentityProvider_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" /d:sonar.coverage.exclusions="**/Migrations/**,**/Program.cs,**/Startup.cs,**/DbContext/**"
           dotnet build --no-restore
           dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
           dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_IdentityProvider_TOKEN }}"
+
+      - name: Check SonarCloud Quality Gate
+        uses: sonarsource/sonarqube-quality-gate-action@v1.1.0
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_IdentityProvider_TOKEN }}
 
   docker-push:
     name: Dockerize and Push

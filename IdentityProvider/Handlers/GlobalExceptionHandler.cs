@@ -19,7 +19,7 @@ namespace IdentityProvider.Handlers
              await httpContext.Response.WriteAsJsonAsync(message, cancellationToken);
             return true;
         }
-        private (HttpStatusCode statusCode, string message) GetExceptionDetails(Exception exception)
+        private static(HttpStatusCode statusCode, string message) GetExceptionDetails(Exception exception)
         {
             return exception switch
             {

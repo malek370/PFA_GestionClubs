@@ -10,18 +10,17 @@ namespace IdentityProvider.DbContext
     public class SeedDb
     {
 
-        private readonly IdpDbContext _context;
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole<Guid>> _roleManager;
-        public SeedDb(IdpDbContext context, UserManager<User> userManager, RoleManager<IdentityRole<Guid>> roleManager)
+        public SeedDb(UserManager<User> userManager, RoleManager<IdentityRole<Guid>> roleManager)
         {
-            _context = context;
             _userManager = userManager;
             _roleManager = roleManager;
         }
         public async Task SeedRoles()
         {
-            if (!_roleManager.Roles.Any())
+            bool rolesExist = await _roleManager.Roles.AnyAsync();
+            if (!rolesExist)
             {
                 var roles = new[] { AppRoles.ClubAdmin, AppRoles.ClubMember, AppRoles.PlatformAdmin, AppRoles.Visitor, AppRoles.Chatbot };
                 foreach (var role in roles)
@@ -39,6 +38,10 @@ namespace IdentityProvider.DbContext
             var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
             var users = JsonSerializer.Deserialize<List<SeedRequest>>(seedData, options);
+            if(users == null || users.Count == 0)
+            {
+                throw new RegistrationFailedException(["No user data found in SeedData.json"]);
+            }
             foreach (var user in users)
             {
                 var newUser = User.Create(user.Email, user.FirstName, user.LastName);
