@@ -23,6 +23,8 @@ COPY Handlers/ ./Handlers/
 COPY Options/ ./Options/
 COPY Repositories/ ./Repositories/
 COPY Requests/ ./Requests/
+COPY Migrations/ ./Migrations/
+COPY Processors/ ./Processors/
 COPY Services/ ./Services/
 COPY appsettings.json ./
 COPY Program.cs ./
