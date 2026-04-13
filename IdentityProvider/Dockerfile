@@ -29,7 +29,7 @@ COPY Services/ ./Services/
 COPY appsettings.json ./
 COPY Program.cs ./
 WORKDIR "/src/."
-RUN dotnet build "./IdentityProvider.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "IdentityProvider.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # Cette étape permet de publier le projet de service à copier dans la phase finale
 FROM build AS publish
