@@ -1,3 +1,10 @@
 # PFA_GestionClubs
 Plateforme de gestion des associations / clubs universitaires avec Chatbot
 # Ce repo est designé pour le backend
+
+# Chatbot
+Le chatbot est conçu pour aider les utilisateurs à trouver des informations sur les clubs universitaires, les événements à venir, les procédures d'inscription, et répondre à d'autres questions fréquemment posées. Il utilise des techniques de traitement du langage naturel pour comprendre les requêtes des utilisateurs et fournir des réponses précises et utiles.
+## Fonctionnalités principales
+- **Gestion des clubs** : Permet aux administrateurs de créer, modifier et supprimer des clubs, ainsi que de gérer les membres et les événements associés.
+## Django
+Le backend de la plateforme est développé en utilisant le framework Django, qui offre une structure robuste pour
