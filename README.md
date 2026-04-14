@@ -8,3 +8,9 @@ Le chatbot est conçu pour aider les utilisateurs à trouver des informations su
 - **Gestion des clubs** : Permet aux administrateurs de créer, modifier et supprimer des clubs, ainsi que de gérer les membres et les événements associés.
 ## Django
 Le backend de la plateforme est développé en utilisant le framework Django, qui offre une structure robuste pour
+## commandes de base
+- `python manage.py runserver` : Démarre le serveur de développement Django.
+- Create Env	`python -m venv .venv`
+- Install from requirements File	`pip install -r requirements.txt`
+- Generate requirements File	pip freeze > requirements.txt
+- Update requirements File	`pip install --upgrade -r requirements.txt && pip freeze > requirements.txt`
