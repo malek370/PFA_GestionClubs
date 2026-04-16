@@ -14,9 +14,9 @@ namespace IdentityProvider.Processors
 {
     public class AuthTokenProcessor: IAuthTokenProcessor
     {
-        private readonly JwtOptions _jwtOptions;
-        private readonly IHttpContextAccessor _httpContext;
-        private readonly UserManager<User> _userManager;
+        protected readonly JwtOptions _jwtOptions;
+        protected readonly IHttpContextAccessor _httpContext;
+        protected readonly UserManager<User> _userManager;
         public AuthTokenProcessor(IOptions<JwtOptions> options,IHttpContextAccessor httpContext, UserManager<User> userManager)
         {
             _jwtOptions = options.Value;
@@ -24,7 +24,7 @@ namespace IdentityProvider.Processors
             _httpContext = httpContext;
 
         }
-        public async Task<(string token, DateTime expires)> GenerateToken(User user)
+        public virtual async Task<(string token, DateTime expires)> GenerateToken(User user)
         {
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_jwtOptions.Secret));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
