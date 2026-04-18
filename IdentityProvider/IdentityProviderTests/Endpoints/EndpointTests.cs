@@ -29,6 +29,7 @@ public class EndpointTests : IClassFixture<CustomWebApplicationFactory>
         {
             Email = "test@test.com",
             Password = "Pass123!",
+            ConfirmPassword = "Pass123!",
             FirstName = "John",
             LastName = "Doe"
         };
@@ -54,6 +55,7 @@ public class EndpointTests : IClassFixture<CustomWebApplicationFactory>
         {
             Email = "exists@test.com",
             Password = "Pass123!",
+            ConfirmPassword = "Pass123!",
             FirstName = "John",
             LastName = "Doe"
         };
