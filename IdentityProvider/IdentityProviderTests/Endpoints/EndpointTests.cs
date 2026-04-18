@@ -16,6 +16,7 @@ public class EndpointTests : IClassFixture<CustomWebApplicationFactory>
     public EndpointTests(CustomWebApplicationFactory factory)
     {
         _accountServiceMock = factory.AccountServiceMock;
+        _accountServiceMock.Reset();
         _client = factory.CreateClient();
     }
 
@@ -70,6 +71,49 @@ public class EndpointTests : IClassFixture<CustomWebApplicationFactory>
         // Assert
         Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
     }
+    [Fact]
+    public async Task Register_MissingPassword_ReturnsBadRequest()
+    {
+        // Arrange
+        var payload = new
+        {
+            Email = "test@test.com",
+            Password = "",
+            ConfirmPassword = "",
+            FirstName = "John",
+            LastName = "Doe"
+        };
+
+        // Act
+        var response = await _client.PostAsJsonAsync("/api/account/register", payload);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        _accountServiceMock.Verify(x => x.RegisterAsync(It.IsAny<RegisterRequest>()), Times.Never);
+    }
+    [Fact]
+    public async Task Register_MismatchedPasswords_ReturnsBadRequest()
+    {
+        // Arrange
+        var request = new RegisterRequest
+        {
+            Email = "test@test.com",
+            Password = "Pass123!",
+            ConfirmPassword = "DifferentPass!",
+            FirstName = "John",
+            LastName = "Doe"
+        };
+
+        // Act
+        var response = await _client.PostAsJsonAsync("/api/account/register", request);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var errors = await response.Content.ReadFromJsonAsync<List<string>>();
+        Assert.NotNull(errors);
+        Assert.Contains(errors, e => e.Contains("Passwords do not match"));
+        _accountServiceMock.Verify(x => x.RegisterAsync(It.IsAny<RegisterRequest>()), Times.Never);
+    }
 
     #endregion
 
@@ -109,6 +153,32 @@ public class EndpointTests : IClassFixture<CustomWebApplicationFactory>
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
+    [Fact]
+    public async Task Login_InvalidEmail_ReturnsBadRequest()
+    {
+        // Arrange
+        var request = new LoginRequest { Email = "not-an-email", Password = "Pass123!" };
+
+        // Act
+        var response = await _client.PostAsJsonAsync("/api/account/login", request);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        _accountServiceMock.Verify(x => x.LoginAsync(It.IsAny<LoginRequest>()), Times.Never);
+    }
+    [Fact]
+    public async Task Login_MissingPassword_ReturnsBadRequest()
+    {
+        // Arrange
+        var payload = new { Email = "test@test.com", Password = "" };
+
+        // Act
+        var response = await _client.PostAsJsonAsync("/api/account/login", payload);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        _accountServiceMock.Verify(x => x.LoginAsync(It.IsAny<LoginRequest>()), Times.Never);
+    }
     #endregion
 
     #region RefreshToken

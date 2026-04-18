@@ -19,7 +19,7 @@ namespace IdentityProvider.Controllers
             {
                 await accountService.LoginAsync(request);
                 return Results.Ok();
-            }).AddEndpointFilter<ValidationFilter<LoginRequest>>(); ;
+            }).AddEndpointFilter<ValidationFilter<LoginRequest>>(); 
 
             app.MapPost("/api/account/refresh-token", async (HttpContext http, IAccountService accountService) =>
             {

@@ -4,8 +4,12 @@ using IdentityProvider.Processors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Moq;
+using System.Security.Claims;
 using Xunit;
+using System.IdentityModel.Tokens.Jwt;
+
 
 namespace IdentityProviderTests.Processors
 {
@@ -97,6 +101,38 @@ namespace IdentityProviderTests.Processors
             Assert.Contains("TEST_COOKIE=token-value", cookie);
             Assert.Contains("httponly", cookie, StringComparison.OrdinalIgnoreCase);
             Assert.Contains("secure", cookie, StringComparison.OrdinalIgnoreCase);
+        }
+
+        [Fact]
+        public async Task PrepareCTokenClaims_ReturnsValidTokenWithExpectedClaims()
+        {
+            // Arrange
+            var user = User.Create("test@test.com", "John", "Doe");
+            user.Id = Guid.NewGuid();
+            var roles = new List<string> { AppRoles.Visitor, AppRoles.ClubMember };
+            _userManagerMock.Setup(x => x.GetRolesAsync(user))
+                .ReturnsAsync(roles);
+
+            var key = new SymmetricSecurityKey(
+                System.Text.Encoding.UTF8.GetBytes(_jwtOptions.Secret));
+
+            // Act
+            var (token, expires) = await _sut.PrepareCTokenClaims(key, user);
+
+            // Assert
+            Assert.NotNull(token);
+            Assert.True(expires > DateTime.UtcNow);
+            Assert.True(expires <= DateTime.UtcNow.AddMinutes(_jwtOptions.ExpirationMinutes + 1));
+
+            Assert.Equal(_jwtOptions.Issuer, token.Issuer);
+            Assert.Contains(token.Audiences, a => a == _jwtOptions.Audience);
+
+            var claims = token.Claims.ToList();
+            Assert.Contains(claims, c => c.Type == JwtRegisteredClaimNames.Sub && c.Value == user.Id.ToString());
+            Assert.Contains(claims, c => c.Type == JwtRegisteredClaimNames.Email && c.Value == user.Email);
+            Assert.Contains(claims, c => c.Type == ClaimTypes.NameIdentifier && c.Value == user.ToString());
+            Assert.Contains(claims, c => c.Type == ClaimTypes.Role && c.Value == AppRoles.Visitor);
+            Assert.Contains(claims, c => c.Type == ClaimTypes.Role && c.Value == AppRoles.ClubMember);
         }
     }
 }
