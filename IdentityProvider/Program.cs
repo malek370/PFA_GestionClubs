@@ -12,7 +12,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,7 +26,7 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IAuthTokenProcessor, AuthTokenProcessor>();
+builder.Services.AddScoped<IAuthTokenProcessor, AuthTokenProcessorAssymetricKey>();
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
 
 //dbcontext
@@ -57,7 +59,15 @@ builder.Services.AddAuthentication(opt =>
 {
     var jwtOptions = builder.Configuration.GetSection(JwtOptions.JwtOptionsKey)
         .Get<JwtOptions>() ?? throw new ArgumentException(nameof(JwtOptions));
-    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+
+    // Ne PAS utiliser options.Authority avec une valeur non-URL
+    options.RequireHttpsMetadata = false;
+
+    var rsa = RSA.Create();
+    rsa.ImportFromPem(File.ReadAllText("public_key.pem"));
+    var publicKey = new RsaSecurityKey(rsa) { KeyId = "1" };
+
+    options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
         ValidateAudience = true,
@@ -65,8 +75,7 @@ builder.Services.AddAuthentication(opt =>
         ValidateIssuerSigningKey = true,
         ValidIssuer = jwtOptions.Issuer,
         ValidAudience = jwtOptions.Audience,
-        IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
-            System.Text.Encoding.UTF8.GetBytes(jwtOptions.Secret)),
+        IssuerSigningKey = publicKey
     };
     options.Events = new JwtBearerEvents
     {
@@ -110,6 +119,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapEndpoints();
+app.WellKnownEndpoints();
 
 await app.RunAsync();
 
