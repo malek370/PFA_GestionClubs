@@ -23,7 +23,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<SeedDb>();
 
 builder.Services.AddHttpContextAccessor();
-
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthTokenProcessor, AuthTokenProcessorAssymetricKey>();
