@@ -28,6 +28,7 @@ COPY Processors/ ./Processors/
 COPY Services/ ./Services/
 COPY appsettings.json ./
 COPY Program.cs ./
+COPY Validators/ ./Validators/
 WORKDIR "/src/."
 RUN dotnet build "IdentityProvider.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
