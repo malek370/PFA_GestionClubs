@@ -107,6 +107,7 @@ namespace IdentityProvider.IdentityProviderTests.Services
             {
                 Email = "existing@test.com",
                 Password = "Pass123!",
+                ConfirmPassword = "Pass123!",
                 FirstName = "New",
                 LastName = "User"
             };
@@ -126,6 +127,7 @@ namespace IdentityProvider.IdentityProviderTests.Services
             {
                 Email = "new@test.com",
                 Password = "Pass123!",
+                ConfirmPassword = "Pass123!",
                 FirstName = "New",
                 LastName = "User"
             };
@@ -149,6 +151,7 @@ namespace IdentityProvider.IdentityProviderTests.Services
             {
                 Email = "new@test.com",
                 Password = "Pass123!",
+                ConfirmPassword = "Pass123!",
                 FirstName = "New",
                 LastName = "User"
             };
@@ -173,6 +176,7 @@ namespace IdentityProvider.IdentityProviderTests.Services
             {
                 Email = "new@test.com",
                 Password = "Pass123!",
+                ConfirmPassword = "Pass123!",
                 FirstName = "New",
                 LastName = "User"
             };
