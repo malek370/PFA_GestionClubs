@@ -42,6 +42,7 @@ RUN dotnet publish "./IdentityProvider.csproj" -c $BUILD_CONFIGURATION -o /app/p
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+COPY entrypoint.sh .
 USER root
 RUN chmod +x entrypoint.sh && apt-get update && apt-get install -y --no-install-recommends openssl && rm -rf /var/lib/apt/lists/* && mkdir -p /app/keys && chown -R $APP_UID /app/keys
 USER $APP_UID
