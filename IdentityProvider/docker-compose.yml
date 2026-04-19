@@ -10,7 +10,7 @@
       - sqldata:/var/opt/mssql
 
   identityprovider:
-    image: identityprovider:latest
+    image: mbokri/identityprovider:latest
     ports:
       - "8080:8080"
     depends_on:

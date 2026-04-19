@@ -28,6 +28,7 @@ COPY Processors/ ./Processors/
 COPY Services/ ./Services/
 COPY appsettings.json ./
 COPY Program.cs ./
+COPY entrypoint.sh ./
 COPY Validators/ ./Validators/
 WORKDIR "/src/."
 RUN dotnet build "IdentityProvider.csproj" -c $BUILD_CONFIGURATION -o /app/build
@@ -41,10 +42,12 @@ RUN dotnet publish "./IdentityProvider.csproj" -c $BUILD_CONFIGURATION -o /app/p
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+COPY entrypoint.sh .
 USER root
 RUN chmod +x entrypoint.sh && apt-get update && apt-get install -y --no-install-recommends openssl && rm -rf /var/lib/apt/lists/* && mkdir -p /app/keys && chown -R $APP_UID /app/keys
 USER $APP_UID
-ENTRYPOINT ["dotnet", "IdentityProvider.dll"]
+ENTRYPOINT ["./entrypoint.sh"]
+
 
 # Commandes pour construire et exécuter le conteneur
 # docker build -t identityprovider .
