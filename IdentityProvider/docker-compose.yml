@@ -1,0 +1,28 @@
+﻿services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      SA_PASSWORD: "YourStr0ngP@ssword!"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqldata:/var/opt/mssql
+
+  identityprovider:
+    image: identityprovider:latest
+    ports:
+      - "8080:8080"
+    depends_on:
+      - sqlserver
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=IdentityProvider;User Id=sa;Password=YourStr0ngP@ssword!;TrustServerCertificate=True;"
+      JwtOptions__Secret: "votre-secret-de-production-suffisamment-long"
+      JwtOptions__Issuer: "myapp"
+      JwtOptions__Audience: "myappusers"
+    volumes:
+      - keys:/app/keys
+
+volumes:
+  sqldata:
+  keys:
