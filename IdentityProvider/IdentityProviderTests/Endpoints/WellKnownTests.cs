@@ -8,7 +8,7 @@ using Xunit;
 
 namespace IdentityProvider.Tests.Endpoints
 {
-    [Collection("WellKnown")]
+    [Collection("WebApplicationFactory")]
     public class WellKnownTests : IClassFixture<CustomWebApplicationFactory>
     {
         private readonly HttpClient _client;
