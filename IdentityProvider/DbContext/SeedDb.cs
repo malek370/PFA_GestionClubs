@@ -36,11 +36,19 @@ namespace IdentityProvider.DbContext
             var seedData = await File.ReadAllTextAsync("DbContext/SeedData.json");
 
             var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-
-            var users = JsonSerializer.Deserialize<List<SeedRequest>>(seedData, options);
-            if(users == null || users.Count == 0)
+            List<SeedRequest>? users;
+            try
             {
-                throw new RegistrationFailedException(["No user data found in SeedData.json"]);
+                users = JsonSerializer.Deserialize<List<SeedRequest>>(seedData, options);
+                if (users == null || users.Count == 0)
+                {
+                    throw new RegistrationFailedException(["No user data found in SeedData.json"]);
+                }
+            }
+            catch (JsonException ex)
+            {
+                // This will provide a much clearer error in the docker logs
+                throw new RegistrationFailedException([$"Failed to parse SeedData.json: {ex.Message}"]);
             }
             foreach (var user in users)
             {
