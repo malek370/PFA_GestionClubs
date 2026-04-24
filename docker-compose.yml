@@ -20,6 +20,7 @@
       JwtOptions__Secret: "votre-secret-de-production-suffisamment-long"
       JwtOptions__Issuer: "myapp"
       JwtOptions__Audience: "myappusers"
+      ASPNETCORE_ENVIRONMENT: "Development"
     volumes:
       - keys:/app/keys
 
