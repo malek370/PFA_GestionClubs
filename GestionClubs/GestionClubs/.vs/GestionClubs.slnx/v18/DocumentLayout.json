@@ -1,0 +1,105 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\mbokri\\Desktop\\PFA\\PFA_GestionClubs\\GestionClubs\\GestionClubs\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{5DB53BDC-03EA-4AB5-88BD-20AE11C6DF96}|Domain\\Domain.csproj|c:\\users\\mbokri\\desktop\\pfa\\pfa_gestionclubs\\gestionclubs\\gestionclubs\\domain\\entities\\adhesion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5DB53BDC-03EA-4AB5-88BD-20AE11C6DF96}|Domain\\Domain.csproj|solutionrelative:domain\\entities\\adhesion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5DB53BDC-03EA-4AB5-88BD-20AE11C6DF96}|Domain\\Domain.csproj|c:\\users\\mbokri\\desktop\\pfa\\pfa_gestionclubs\\gestionclubs\\gestionclubs\\domain\\enums\\status.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5DB53BDC-03EA-4AB5-88BD-20AE11C6DF96}|Domain\\Domain.csproj|solutionrelative:domain\\enums\\status.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5DB53BDC-03EA-4AB5-88BD-20AE11C6DF96}|Domain\\Domain.csproj|c:\\users\\mbokri\\desktop\\pfa\\pfa_gestionclubs\\gestionclubs\\gestionclubs\\domain\\entities\\baseentity.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5DB53BDC-03EA-4AB5-88BD-20AE11C6DF96}|Domain\\Domain.csproj|solutionrelative:domain\\entities\\baseentity.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5DB53BDC-03EA-4AB5-88BD-20AE11C6DF96}|Domain\\Domain.csproj|c:\\users\\mbokri\\desktop\\pfa\\pfa_gestionclubs\\gestionclubs\\gestionclubs\\domain\\domain.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{5DB53BDC-03EA-4AB5-88BD-20AE11C6DF96}|Domain\\Domain.csproj|solutionrelative:domain\\domain.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5DB53BDC-03EA-4AB5-88BD-20AE11C6DF96}|Domain\\Domain.csproj|c:\\users\\mbokri\\desktop\\pfa\\pfa_gestionclubs\\gestionclubs\\gestionclubs\\domain\\entities\\club.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5DB53BDC-03EA-4AB5-88BD-20AE11C6DF96}|Domain\\Domain.csproj|solutionrelative:domain\\entities\\club.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Status.cs",
+              "DocumentMoniker": "C:\\Users\\mbokri\\Desktop\\PFA\\PFA_GestionClubs\\GestionClubs\\GestionClubs\\Domain\\Enums\\Status.cs",
+              "RelativeDocumentMoniker": "Domain\\Enums\\Status.cs",
+              "ToolTip": "C:\\Users\\mbokri\\Desktop\\PFA\\PFA_GestionClubs\\GestionClubs\\GestionClubs\\Domain\\Enums\\Status.cs",
+              "RelativeToolTip": "Domain\\Enums\\Status.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAPAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-23T19:00:58.768Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Adhesion.cs",
+              "DocumentMoniker": "C:\\Users\\mbokri\\Desktop\\PFA\\PFA_GestionClubs\\GestionClubs\\GestionClubs\\Domain\\Entities\\Adhesion.cs",
+              "RelativeDocumentMoniker": "Domain\\Entities\\Adhesion.cs",
+              "ToolTip": "C:\\Users\\mbokri\\Desktop\\PFA\\PFA_GestionClubs\\GestionClubs\\GestionClubs\\Domain\\Entities\\Adhesion.cs",
+              "RelativeToolTip": "Domain\\Entities\\Adhesion.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAPAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-23T18:58:05.841Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Club.cs",
+              "DocumentMoniker": "C:\\Users\\mbokri\\Desktop\\PFA\\PFA_GestionClubs\\GestionClubs\\GestionClubs\\Domain\\Entities\\Club.cs",
+              "RelativeDocumentMoniker": "Domain\\Entities\\Club.cs",
+              "ToolTip": "C:\\Users\\mbokri\\Desktop\\PFA\\PFA_GestionClubs\\GestionClubs\\GestionClubs\\Domain\\Entities\\Club.cs",
+              "RelativeToolTip": "Domain\\Entities\\Club.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-23T18:53:37.249Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "BaseEntity.cs",
+              "DocumentMoniker": "C:\\Users\\mbokri\\Desktop\\PFA\\PFA_GestionClubs\\GestionClubs\\GestionClubs\\Domain\\Entities\\BaseEntity.cs",
+              "RelativeDocumentMoniker": "Domain\\Entities\\BaseEntity.cs",
+              "ToolTip": "C:\\Users\\mbokri\\Desktop\\PFA\\PFA_GestionClubs\\GestionClubs\\GestionClubs\\Domain\\Entities\\BaseEntity.cs",
+              "RelativeToolTip": "Domain\\Entities\\BaseEntity.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAATAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-23T18:46:49.253Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Domain",
+              "DocumentMoniker": "C:\\Users\\mbokri\\Desktop\\PFA\\PFA_GestionClubs\\GestionClubs\\GestionClubs\\Domain\\Domain.csproj",
+              "RelativeDocumentMoniker": "Domain\\Domain.csproj",
+              "ToolTip": "C:\\Users\\mbokri\\Desktop\\PFA\\PFA_GestionClubs\\GestionClubs\\GestionClubs\\Domain\\Domain.csproj",
+              "RelativeToolTip": "Domain\\Domain.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-04-23T18:46:14.123Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
