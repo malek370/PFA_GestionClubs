@@ -90,6 +90,7 @@ namespace IdentityProviderTests.Processors
         {
             // Arrange
             var httpContext = new DefaultHttpContext();
+            httpContext.Request.Scheme = "https";
             _httpContextAccessorMock.Setup(x => x.HttpContext).Returns(httpContext);
 
             // Act
