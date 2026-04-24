@@ -30,7 +30,7 @@ namespace IdentityProvider.Processors
         public virtual async Task<(string token, DateTime expires)> GenerateToken(User user)
         {
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_jwtOptions.Secret));
-            var (token,expires) = await PrepareCTokenClaims(key, user);
+            var (token,expires) = await PrepareCTokenClaims(key, user, SecurityAlgorithms.HmacSha256);
             return (new JwtSecurityTokenHandler().WriteToken(token), expires);
         }
         public (string token, DateTime expires) GenerateRefreshToken()
@@ -51,9 +51,9 @@ namespace IdentityProvider.Processors
                 SameSite = SameSiteMode.Strict
             });
         }
-        public async Task<(JwtSecurityToken,DateTime)> PrepareCTokenClaims(SecurityKey key,User user)
+        public async Task<(JwtSecurityToken,DateTime)> PrepareCTokenClaims(SecurityKey key,User user,string securityAlgorithm)
         {
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var creds = new SigningCredentials(key, securityAlgorithm);
             var expires = DateTime.UtcNow.AddMinutes(_jwtOptions.ExpirationMinutes);
             var claims = new List<Claim>
             {
