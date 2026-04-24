@@ -47,8 +47,8 @@ namespace IdentityProvider.Processors
                 HttpOnly = true,
                 Expires = expires,
                 IsEssential = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict
+                Secure = _httpContext.HttpContext.Request.IsHttps,
+                SameSite = SameSiteMode.Lax
             });
         }
         public async Task<(JwtSecurityToken,DateTime)> PrepareCTokenClaims(SecurityKey key,User user,string securityAlgorithm)
