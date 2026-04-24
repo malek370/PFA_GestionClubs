@@ -96,7 +96,7 @@ builder.Services.AddOpenApi();
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var dbContext = scope.ServiceProvider.GetRequiredService<IdpDbContext>();
     dbContext.Database.Migrate(); // Applies all pending migrations
 }   
 // Configure the HTTP request pipeline.
