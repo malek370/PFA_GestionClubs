@@ -18,7 +18,7 @@ namespace IdentityProvider.Processors
             rsa.ImportFromPem(file);
             var privateKey = new RsaSecurityKey(rsa) { KeyId = "1" };
 
-            var (token, expires) = await PrepareCTokenClaims(privateKey, user);
+            var (token, expires) = await PrepareCTokenClaims(privateKey, user, SecurityAlgorithms.RsaSha256);
             return (new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler().WriteToken(token), expires);
         }
     }

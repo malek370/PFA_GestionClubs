@@ -5,7 +5,7 @@ Plateforme de gestion des associations / clubs universitaires avec Chatbot
 Pour lancer le backend et ses services via Docker Compose, exécutez la commande suivante à la racine du projet :
 
 ```bash
-docker compose up -d
+docker compose up -d --pull always
 ```
 
 # Ce repo est designé pour le backend

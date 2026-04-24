@@ -117,7 +117,7 @@ namespace IdentityProviderTests.Processors
                 System.Text.Encoding.UTF8.GetBytes(_jwtOptions.Secret));
 
             // Act
-            var (token, expires) = await _sut.PrepareCTokenClaims(key, user);
+            var (token, expires) = await _sut.PrepareCTokenClaims(key, user, SecurityAlgorithms.HmacSha256);
 
             // Assert
             Assert.NotNull(token);
