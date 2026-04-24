@@ -8,6 +8,7 @@ using Xunit;
 
 namespace IdentityProvider.IdentityProviderTests.Endpoints;
 
+[Collection("Endpoints")]
 public class EndpointTests : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly HttpClient _client;
@@ -251,4 +252,9 @@ public class EndpointTests : IClassFixture<CustomWebApplicationFactory>
     }
 
     #endregion
+}
+
+[CollectionDefinition("Endpoints")]
+public class EndpointsCollection : ICollectionFixture<CustomWebApplicationFactory>
+{
 }

@@ -94,11 +94,21 @@ builder.AddPolicies();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+// Apply migrations only if not using in-memory database (e.g., not in tests)
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<IdpDbContext>();
-    dbContext.Database.Migrate(); // Applies all pending migrations
-}   
+    try
+    {
+        dbContext.Database.Migrate(); // Applies all pending migrations
+    }
+    catch (InvalidOperationException ex) when (ex.Message.Contains("InMemory"))
+    {
+        // Skip migration for in-memory databases used in tests
+    }
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
