@@ -12,7 +12,8 @@
   identityprovider:
     image: mbokri/identityprovider:latest
     ports:
-      - "8080:8080"
+       - "8080:8080"   # HTTP (optionnel, tu peux l'enlever)
+       - "8443:8443"   # HTTPS
     depends_on:
       - sqlserver
     environment:
@@ -21,8 +22,12 @@
       JwtOptions__Issuer: "myapp"
       JwtOptions__Audience: "myappusers"
       ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_URLS: "https://+:8443;http://+:8080"
+      ASPNETCORE_Kestrel__Certificates__Default__Path: "/https/aspnetapp.pfx"
+      ASPNETCORE_Kestrel__Certificates__Default__KeyPath: "/https/aspnetapp.key"
     volumes:
       - keys:/app/keys
+      - ./certs:/https:ro   # monte le certificat dans le container
 
 volumes:
   sqldata:
