@@ -42,13 +42,18 @@ namespace IdentityProvider.Processors
         }
         public void WriteAuthTokenAsHttpOnlyCookie(string cookieName, string token, DateTime expires)
         {
+            var isHttps = _httpContext.HttpContext!.Request.IsHttps;
             _httpContext.HttpContext!.Response.Cookies.Append(cookieName, token, new CookieOptions
             {
                 HttpOnly = true,
                 Expires = expires,
                 IsEssential = true,
-                Secure = false,
-                SameSite = SameSiteMode.Lax
+                Path = "/",
+                // En HTTPS (Docker / prod) : Secure obligatoire, et SameSite=None
+                // pour que le cookie soit renvoyé par les requêtes XHR/fetch (Scalar).
+                // En HTTP local : Secure=false + Lax fonctionnent.
+                Secure = isHttps,
+                SameSite = isHttps ? SameSiteMode.None : SameSiteMode.Lax
             });
         }
         public async Task<(JwtSecurityToken,DateTime)> PrepareCTokenClaims(SecurityKey key,User user,string securityAlgorithm)
