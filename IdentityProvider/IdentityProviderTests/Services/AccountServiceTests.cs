@@ -4,6 +4,7 @@ using IdentityProvider.Exceptions;
 using IdentityProvider.Requests;
 using IdentityProvider.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
@@ -16,6 +17,7 @@ namespace IdentityProvider.IdentityProviderTests.Services
         private readonly Mock<IAuthTokenProcessor> _authTokenProcessorMock;
         private readonly Mock<IUserRepository> _userRepositoryMock;
         private readonly Mock<IPasswordHasher<User>> _passwordHasherMock;
+        private readonly Mock<ILogger<AccountService>> _loggerMock;
         private readonly AccountService _sut;
 
         public AccountServiceTests()
@@ -31,11 +33,13 @@ namespace IdentityProvider.IdentityProviderTests.Services
 
             _authTokenProcessorMock = new Mock<IAuthTokenProcessor>();
             _userRepositoryMock = new Mock<IUserRepository>();
+            _loggerMock = new Mock<ILogger<AccountService>>();
 
             _sut = new AccountService(
                 _userManagerMock.Object,
                 _authTokenProcessorMock.Object,
-                _userRepositoryMock.Object);
+                _userRepositoryMock.Object,
+                _loggerMock.Object);
         }
 
         #region LoginAsync

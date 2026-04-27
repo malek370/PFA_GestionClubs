@@ -3,20 +3,17 @@ using IdentityProvider.Controllers;
 using IdentityProvider.DbContext;
 using IdentityProvider.Entities;
 using IdentityProvider.Handlers;
+using IdentityProvider.Middleware;
 using IdentityProvider.Options;
 using IdentityProvider.Processors;
 using IdentityProvider.Repositories;
-using IdentityProvider.Requests;
 using IdentityProvider.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using System.Security.Cryptography;
-using System.Threading.Tasks;
-
 var builder = WebApplication.CreateBuilder(args);
 
 //seeding db 
@@ -29,10 +26,12 @@ builder.Services.AddScoped<IAuthTokenProcessor, AuthTokenProcessorAssymetricKey>
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
 
 //dbcontext
-builder.Services.AddDbContext<IdpDbContext>(opt =>
-{
-    opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
+//builder.Services.AddDbContext<IdpDbContext>(opt =>
+//{
+//    opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+//});
+builder.Services.AddDbContext<IdpDbContext>(options =>
+    options.UseSqlite("Data Source=mabase.db"));
 
 // AddIdentity AVANT AddAuthentication
 builder.Services.AddIdentity<User, IdentityRole<Guid>>(opts =>
@@ -80,7 +79,58 @@ builder.Services.AddAuthentication(opt =>
     {
         OnMessageReceived = context =>
         {
-            context.Token = context.Request.Cookies["ACCESS_TOKEN"];
+            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+
+            var token = context.Request.Cookies["ACCESS_TOKEN"];
+            if (!string.IsNullOrEmpty(token))
+            {
+                logger.LogDebug("JWT token received from ACCESS_TOKEN cookie for request {Path}", context.Request.Path);
+                context.Token = token;
+            }
+            else
+            {
+                logger.LogDebug("No ACCESS_TOKEN cookie found for request {Path}", context.Request.Path);
+            }
+
+            return Task.CompletedTask;
+        },
+        OnTokenValidated = context =>
+        {
+            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+            var claims = context.Principal?.Claims;
+            var userId = claims?.FirstOrDefault(c => c.Type == System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)?.Value;
+            var email = claims?.FirstOrDefault(c => c.Type == System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Email)?.Value;
+            var roles = claims?.Where(c => c.Type == System.Security.Claims.ClaimTypes.Role).Select(c => c.Value);
+
+            logger.LogInformation("JWT token validated successfully for user {UserId} ({Email}) with roles: {Roles}", 
+                userId, email, string.Join(", ", roles ?? Enumerable.Empty<string>()));
+
+            return Task.CompletedTask;
+        },
+        OnAuthenticationFailed = context =>
+        {
+            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+
+            logger.LogWarning("JWT token validation failed for request {Path}: {Error}", 
+                context.Request.Path, context.Exception.Message);
+
+            return Task.CompletedTask;
+        },
+        OnForbidden = context =>
+        {
+            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+
+            logger.LogWarning("Access forbidden for request {Path}", context.Request.Path);
+
+            return Task.CompletedTask;
+        },
+        OnChallenge = context =>
+        {
+            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+
+            logger.LogWarning("Authentication challenge triggered for request {Path}: {Error}", 
+                context.Request.Path, context.ErrorDescription ?? "No token provided");
+
             return Task.CompletedTask;
         }
     };
@@ -126,6 +176,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseExceptionHandler(_ => { });
+
+// Add request/response logging middleware
+app.UseMiddleware<RequestResponseLoggingMiddleware>();
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

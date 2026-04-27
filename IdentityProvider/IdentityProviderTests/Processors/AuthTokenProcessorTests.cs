@@ -3,6 +3,7 @@ using IdentityProvider.Options;
 using IdentityProvider.Processors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Moq;
@@ -18,6 +19,7 @@ namespace IdentityProviderTests.Processors
         private readonly JwtOptions _jwtOptions;
         private readonly Mock<IHttpContextAccessor> _httpContextAccessorMock;
         private readonly Mock<UserManager<User>> _userManagerMock;
+        private readonly Mock<ILogger<AuthTokenProcessor>> _loggerMock;
         private readonly AuthTokenProcessor _sut;
 
         public AuthTokenProcessorTests()
@@ -35,11 +37,13 @@ namespace IdentityProviderTests.Processors
             var store = new Mock<IUserStore<User>>();
             _userManagerMock = new Mock<UserManager<User>>(
                 store.Object, null!, null!, null!, null!, null!, null!, null!, null!);
+            _loggerMock = new Mock<ILogger<AuthTokenProcessor>>();
 
             _sut = new AuthTokenProcessor(
                 Options.Create(_jwtOptions),
                 _httpContextAccessorMock.Object,
-                _userManagerMock.Object);
+                _userManagerMock.Object,
+                _loggerMock.Object);
         }
 
         [Fact]
