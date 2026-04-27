@@ -47,7 +47,7 @@ namespace IdentityProvider.Processors
                 HttpOnly = true,
                 Expires = expires,
                 IsEssential = true,
-                Secure = true,
+                Secure = false,
                 SameSite = SameSiteMode.Lax
             });
         }
