@@ -49,7 +49,7 @@ jobs:
           path: IdentityProvider/bin/
   docker-push:
     name: Dockerize and Push
-    needs: sonar-analysis
+    needs: build
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
 
