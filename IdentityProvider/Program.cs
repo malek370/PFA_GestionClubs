@@ -80,8 +80,8 @@ builder.Services.AddAuthentication(opt =>
     {
         OnMessageReceived = context =>
         {
-            context.Token = context.Request.Cookies["ACCESS_TOKEN"];
-            Console.WriteLine($"Token received from cookie: {context.Token}");
+            context.Token = context.Response.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            Console.WriteLine($"Token received from header: {context.Token}");
             return Task.CompletedTask;
         },
         OnTokenValidated = context =>

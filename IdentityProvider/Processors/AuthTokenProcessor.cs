@@ -52,8 +52,8 @@ namespace IdentityProvider.Processors
                 // En HTTPS (Docker / prod) : Secure obligatoire, et SameSite=None
                 // pour que le cookie soit renvoyé par les requêtes XHR/fetch (Scalar).
                 // En HTTP local : Secure=false + Lax fonctionnent.
-                Secure = isHttps,
-                SameSite = isHttps ? SameSiteMode.None : SameSiteMode.Lax
+                Secure = true,
+                SameSite =SameSiteMode.None
             });
         }
         public async Task<(JwtSecurityToken,DateTime)> PrepareCTokenClaims(SecurityKey key,User user,string securityAlgorithm)
