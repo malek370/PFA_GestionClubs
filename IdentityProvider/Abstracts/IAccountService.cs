@@ -1,11 +1,12 @@
 ﻿using IdentityProvider.Requests;
+using IdentityProvider.Responses;
 
 namespace IdentityProvider.Abstracts
 {
     public interface IAccountService
     {
-        Task LoginAsync(LoginRequest loginRequest);
+        Task<TokenResponse> LoginAsync(LoginRequest loginRequest);
         Task RegisterAsync(RegisterRequest registerRequest);
-        Task RefreshTokenAsync(string? refreshToken);
+        Task<TokenResponse> RefreshTokenAsync(string? refreshToken);
     }
 }

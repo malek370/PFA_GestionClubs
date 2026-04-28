@@ -80,7 +80,21 @@ builder.Services.AddAuthentication(opt =>
     {
         OnMessageReceived = context =>
         {
-            context.Token = context.Request.Cookies["ACCESS_TOKEN"];
+            context.Token = context.Response.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            Console.WriteLine($"Token received from header: {context.Token}");
+            return Task.CompletedTask;
+        },
+        OnTokenValidated = context =>
+        {
+            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+            var claims = context.Principal?.Claims;
+            var userId = claims?.FirstOrDefault(c => c.Type == System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)?.Value;
+            var email = claims?.FirstOrDefault(c => c.Type == System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Email)?.Value;
+            var roles = claims?.Where(c => c.Type == System.Security.Claims.ClaimTypes.Role).Select(c => c.Value);
+
+            logger.LogInformation("JWT token validated successfully for user {UserId} ({Email}) with roles: {Roles}",
+                userId, email, string.Join(", ", roles ?? Enumerable.Empty<string>()));
+
             return Task.CompletedTask;
         }
     };
@@ -125,6 +139,21 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.Use(async (context, next) =>
+{
+    Console.WriteLine("log request");
+    Console.WriteLine($"{context.Request.Method} - {context.Request.Path}");
+    Console.WriteLine("log headers");
+    foreach (var header in context.Request.Headers)
+    {
+        Console.WriteLine($"{header.Key}: {header.Value}");
+    }
+    foreach (var cookie in context.Request.Cookies)
+    {
+        Console.WriteLine($"Cookie: {cookie.Key} = {cookie.Value}");
+    }
+    await next();
+});
 app.UseExceptionHandler(_ => { });
 app.UseHttpsRedirection();
 

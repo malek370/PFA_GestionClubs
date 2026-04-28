@@ -10,6 +10,9 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
   -keyout ./certs/aspnetapp.key \
   -out ./certs/aspnetapp.crt \
   -subj "//CN=localhost"
+
+# Fixer les permissions pour l'utilisateur non- root de Docker
+chmod 644 ./certs/aspnetapp.key ./certs/aspnetapp.crt ./certs/private_key.pem ./certs/public_key.pem
 ```
 lancer les contenaires
 ```bash
