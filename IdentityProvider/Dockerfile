@@ -30,6 +30,8 @@ COPY appsettings.json ./
 COPY Program.cs ./
 COPY entrypoint.sh ./
 COPY Validators/ ./Validators/
+COPY Migrations/ ./Migrations/
+COPY Responses/ ./Responses/
 WORKDIR "/src/."
 RUN dotnet build "IdentityProvider.csproj" -c $BUILD_CONFIGURATION -o /app/build
 

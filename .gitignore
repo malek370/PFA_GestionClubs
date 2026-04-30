@@ -1,5 +1,2 @@
-﻿################################################################################
-# Ce fichier .gitignore a été automatiquement créé par Microsoft(R) Visual Studio.
-################################################################################
-
-/certs
+﻿# Ignore certificates and keys
+certs/

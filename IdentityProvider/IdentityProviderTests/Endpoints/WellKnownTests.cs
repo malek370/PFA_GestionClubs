@@ -8,12 +8,15 @@ using Xunit;
 
 namespace IdentityProvider.Tests.Endpoints
 {
+    [Collection("WebApplicationFactory")]
     public class WellKnownTests : IClassFixture<CustomWebApplicationFactory>
     {
         private readonly HttpClient _client;
+        private readonly CustomWebApplicationFactory _factory;
 
         public WellKnownTests(CustomWebApplicationFactory factory)
         {
+            _factory = factory;
             _client = factory.CreateClient();
         }
 
@@ -59,5 +62,10 @@ namespace IdentityProvider.Tests.Endpoints
             Assert.False(string.IsNullOrWhiteSpace(key.GetProperty("e").GetString()));
             Assert.False(string.IsNullOrWhiteSpace(key.GetProperty("n").GetString()));
         }
+    }
+
+    [CollectionDefinition("WellKnown")]
+    public class WellKnownCollection : ICollectionFixture<CustomWebApplicationFactory>
+    {
     }
 }

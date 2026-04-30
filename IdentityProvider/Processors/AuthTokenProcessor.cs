@@ -30,7 +30,7 @@ namespace IdentityProvider.Processors
         public virtual async Task<(string token, DateTime expires)> GenerateToken(User user)
         {
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_jwtOptions.Secret));
-            var (token,expires) = await PrepareCTokenClaims(key, user);
+            var (token,expires) = await PrepareCTokenClaims(key, user, SecurityAlgorithms.HmacSha256);
             return (new JwtSecurityTokenHandler().WriteToken(token), expires);
         }
         public (string token, DateTime expires) GenerateRefreshToken()
@@ -42,18 +42,23 @@ namespace IdentityProvider.Processors
         }
         public void WriteAuthTokenAsHttpOnlyCookie(string cookieName, string token, DateTime expires)
         {
+            var isHttps = _httpContext.HttpContext!.Request.IsHttps;
             _httpContext.HttpContext!.Response.Cookies.Append(cookieName, token, new CookieOptions
             {
                 HttpOnly = true,
                 Expires = expires,
                 IsEssential = true,
+                Path = "/",
+                // En HTTPS (Docker / prod) : Secure obligatoire, et SameSite=None
+                // pour que le cookie soit renvoyé par les requêtes XHR/fetch (Scalar).
+                // En HTTP local : Secure=false + Lax fonctionnent.
                 Secure = true,
-                SameSite = SameSiteMode.Strict
+                SameSite =SameSiteMode.None
             });
         }
-        public async Task<(JwtSecurityToken,DateTime)> PrepareCTokenClaims(SecurityKey key,User user)
+        public async Task<(JwtSecurityToken,DateTime)> PrepareCTokenClaims(SecurityKey key,User user,string securityAlgorithm)
         {
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var creds = new SigningCredentials(key, securityAlgorithm);
             var expires = DateTime.UtcNow.AddMinutes(_jwtOptions.ExpirationMinutes);
             var claims = new List<Claim>
             {

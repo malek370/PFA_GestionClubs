@@ -1,6 +1,7 @@
 using IdentityProvider.Abstracts;
 using IdentityProvider.Exceptions;
 using IdentityProvider.Requests;
+using IdentityProvider.Responses;
 using Moq;
 using System.Net;
 using System.Net.Http.Json;
@@ -8,6 +9,7 @@ using Xunit;
 
 namespace IdentityProvider.IdentityProviderTests.Endpoints;
 
+[Collection("WebApplicationFactory")]
 public class EndpointTests : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly HttpClient _client;
@@ -127,7 +129,7 @@ public class EndpointTests : IClassFixture<CustomWebApplicationFactory>
 
         _accountServiceMock
             .Setup(x => x.LoginAsync(It.IsAny<LoginRequest>()))
-            .Returns(Task.CompletedTask);
+            .ReturnsAsync(new TokenResponse { AccessToken = "access", RefreshToken = "refresh", AccessTokenExpires = DateTime.UtcNow.AddMinutes(15), RefreshTokenExpires = DateTime.UtcNow.AddDays(7) });
 
         // Act
         var response = await _client.PostAsJsonAsync("/api/account/login", request);
@@ -189,10 +191,10 @@ public class EndpointTests : IClassFixture<CustomWebApplicationFactory>
         // Arrange
         _accountServiceMock
             .Setup(x => x.RefreshTokenAsync(It.IsAny<string?>()))
-            .Returns(Task.CompletedTask);
+            .ReturnsAsync(new TokenResponse { AccessToken = "access", RefreshToken = "refresh", AccessTokenExpires = DateTime.UtcNow.AddMinutes(15), RefreshTokenExpires = DateTime.UtcNow.AddDays(7) });
 
         var requestMessage = new HttpRequestMessage(HttpMethod.Post, "/api/account/refresh-token");
-        requestMessage.Headers.Add("Cookie", "REFRESH_TOKEN=valid-token");
+        requestMessage.Headers.Add("REFRESH_TOKEN", "valid-token");
 
         // Act
         var response = await _client.SendAsync(requestMessage);
@@ -206,7 +208,7 @@ public class EndpointTests : IClassFixture<CustomWebApplicationFactory>
     {
         // Arrange
         _accountServiceMock
-            .Setup(x => x.RefreshTokenAsync(null))
+            .Setup(x => x.RefreshTokenAsync(It.IsAny<string?>()))
             .ThrowsAsync(new RefreshTokenException("Refresh token is missing"));
 
         // Act
@@ -251,4 +253,9 @@ public class EndpointTests : IClassFixture<CustomWebApplicationFactory>
     }
 
     #endregion
+}
+
+[CollectionDefinition("Endpoints")]
+public class EndpointsCollection : ICollectionFixture<CustomWebApplicationFactory>
+{
 }

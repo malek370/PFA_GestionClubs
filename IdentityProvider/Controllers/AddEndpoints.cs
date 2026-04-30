@@ -17,14 +17,14 @@ namespace IdentityProvider.Controllers
 
             app.MapPost("/api/account/login", async (LoginRequest request, IAccountService accountService) =>
             {
-                await accountService.LoginAsync(request);
-                return Results.Ok();
+                var result = await accountService.LoginAsync(request);
+                return Results.Ok(result);
             }).AddEndpointFilter<ValidationFilter<LoginRequest>>(); 
 
             app.MapPost("/api/account/refresh-token", async (HttpContext http, IAccountService accountService) =>
             {
-                await accountService.RefreshTokenAsync(http.Request.Cookies["REFRESH_TOKEN"]);
-                return Results.Ok();
+                var result = await accountService.RefreshTokenAsync(http.Request.Headers["REFRESH_TOKEN"]);
+                return Results.Ok(result);
             });
 
             app.MapGet("/api/account/protected", () => "This is a protected endpoint").RequireAuthorization();
