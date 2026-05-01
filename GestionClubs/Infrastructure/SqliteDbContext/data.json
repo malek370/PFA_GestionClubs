@@ -1,0 +1,264 @@
+{
+  "clubs": [
+    {
+      "id": 1,
+      "creatinDate": "2026-01-01T00:00:00Z",
+      "name": "Tech Innovators Club",
+      "description": "A club for students passionate about technology and innovation.",
+      "documents": [ "charter.pdf", "rules.docx" ],
+      "members": [
+        {
+          "id": 1,
+          "creatinDate": "2026-01-02T00:00:00Z",
+          "clubId": 1,
+          "firstName": "Ali",
+          "lastName": "Ben Salah",
+          "email": "ali@club.com",
+          "postInClub": "President"
+        },
+        {
+          "id": 2,
+          "creatinDate": "2026-01-02T00:00:00Z",
+          "clubId": 1,
+          "firstName": "Sara",
+          "lastName": "Trabelsi",
+          "email": "sara@club.com",
+          "postInClub": "VicePresident"
+        },
+        {
+          "id": 3,
+          "creatinDate": "2026-01-02T00:00:00Z",
+          "clubId": 1,
+          "firstName": "Youssef",
+          "lastName": "Gharbi",
+          "email": "youssef@club.com",
+          "postInClub": "Secretary"
+        },
+        {
+          "id": 4,
+          "creatinDate": "2026-01-02T00:00:00Z",
+          "clubId": 1,
+          "firstName": "Meriem",
+          "lastName": "Jaziri",
+          "email": "meriem@club.com",
+          "postInClub": "Member"
+        }
+      ],
+      "adhesions": [
+        {
+          "id": 1,
+          "creatinDate": "2026-01-03T00:00:00Z",
+          "clubId": 1,
+          "email": "new1@mail.com",
+          "firstName": "Hatem",
+          "lastName": "Saidi",
+          "status": "Pending"
+        },
+        {
+          "id": 2,
+          "creatinDate": "2026-01-03T00:00:00Z",
+          "clubId": 1,
+          "email": "new2@mail.com",
+          "firstName": "Amal",
+          "lastName": "Brahmi",
+          "status": "Accepted"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "creatinDate": "2026-01-01T00:00:00Z",
+      "name": "Art & Culture Club",
+      "description": "Exploring creativity through art and cultural events.",
+      "documents": [ "agenda.pdf" ],
+      "members": [
+        {
+          "id": 5,
+          "creatinDate": "2026-01-02T00:00:00Z",
+          "clubId": 2,
+          "firstName": "Nour",
+          "lastName": "Khaled",
+          "email": "nour@club.com",
+          "postInClub": "President"
+        },
+        {
+          "id": 6,
+          "creatinDate": "2026-01-02T00:00:00Z",
+          "clubId": 2,
+          "firstName": "Omar",
+          "lastName": "Mansour",
+          "email": "omar@club.com",
+          "postInClub": "Treasurer"
+        },
+        {
+          "id": 7,
+          "creatinDate": "2026-01-02T00:00:00Z",
+          "clubId": 2,
+          "firstName": "Leila",
+          "lastName": "Ayadi",
+          "email": "leila@club.com",
+          "postInClub": "Secretary"
+        },
+        {
+          "id": 8,
+          "creatinDate": "2026-01-02T00:00:00Z",
+          "clubId": 2,
+          "firstName": "Karim",
+          "lastName": "Feki",
+          "email": "karim@club.com",
+          "postInClub": "Member"
+        }
+      ],
+      "adhesions": [
+        {
+          "id": 3,
+          "creatinDate": "2026-01-03T00:00:00Z",
+          "clubId": 2,
+          "email": "art1@mail.com",
+          "firstName": "Rim",
+          "lastName": "Zouari",
+          "status": "Pending"
+        },
+        {
+          "id": 4,
+          "creatinDate": "2026-01-03T00:00:00Z",
+          "clubId": 2,
+          "email": "art2@mail.com",
+          "firstName": "Sami",
+          "lastName": "Chebbi",
+          "status": "Refused"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "creatinDate": "2026-01-01T00:00:00Z",
+      "name": "Sports Club",
+      "description": "Promoting physical fitness and teamwork.",
+      "documents": [ "schedule.pdf" ],
+      "members": [
+        {
+          "id": 9,
+          "creatinDate": "2026-01-02T00:00:00Z",
+          "clubId": 3,
+          "firstName": "Walid",
+          "lastName": "Haddad",
+          "email": "walid@club.com",
+          "postInClub": "President"
+        },
+        {
+          "id": 10,
+          "creatinDate": "2026-01-02T00:00:00Z",
+          "clubId": 3,
+          "firstName": "Firas",
+          "lastName": "Ben Ali",
+          "email": "firas@club.com",
+          "postInClub": "VicePresident"
+        },
+        {
+          "id": 11,
+          "creatinDate": "2026-01-02T00:00:00Z",
+          "clubId": 3,
+          "firstName": "Ines",
+          "lastName": "Riahi",
+          "email": "ines@club.com",
+          "postInClub": "HeadOfDepartment"
+        },
+        {
+          "id": 12,
+          "creatinDate": "2026-01-02T00:00:00Z",
+          "clubId": 3,
+          "firstName": "Adem",
+          "lastName": "Sassi",
+          "email": "adem@club.com",
+          "postInClub": "Member"
+        }
+      ],
+      "adhesions": [
+        {
+          "id": 5,
+          "creatinDate": "2026-01-03T00:00:00Z",
+          "clubId": 3,
+          "email": "sport1@mail.com",
+          "firstName": "Hiba",
+          "lastName": "Mejri",
+          "status": "Accepted"
+        },
+        {
+          "id": 6,
+          "creatinDate": "2026-01-03T00:00:00Z",
+          "clubId": 3,
+          "email": "sport2@mail.com",
+          "firstName": "Lotfi",
+          "lastName": "Karray",
+          "status": "Pending"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "creatinDate": "2026-01-01T00:00:00Z",
+      "name": "Entrepreneurship Club",
+      "description": "Helping students build startups and business skills.",
+      "documents": [ "business-plan.pdf" ],
+      "members": [
+        {
+          "id": 13,
+          "creatinDate": "2026-01-02T00:00:00Z",
+          "clubId": 4,
+          "firstName": "Zied",
+          "lastName": "Ghannouchi",
+          "email": "zied@club.com",
+          "postInClub": "President"
+        },
+        {
+          "id": 14,
+          "creatinDate": "2026-01-02T00:00:00Z",
+          "clubId": 4,
+          "firstName": "Maha",
+          "lastName": "Toumi",
+          "email": "maha@club.com",
+          "postInClub": "Treasurer"
+        },
+        {
+          "id": 15,
+          "creatinDate": "2026-01-02T00:00:00Z",
+          "clubId": 4,
+          "firstName": "Tarek",
+          "lastName": "Chahed",
+          "email": "tarek@club.com",
+          "postInClub": "Secretary"
+        },
+        {
+          "id": 16,
+          "creatinDate": "2026-01-02T00:00:00Z",
+          "clubId": 4,
+          "firstName": "Salma",
+          "lastName": "Ben Amor",
+          "email": "salma@club.com",
+          "postInClub": "Member"
+        }
+      ],
+      "adhesions": [
+        {
+          "id": 7,
+          "creatinDate": "2026-01-03T00:00:00Z",
+          "clubId": 4,
+          "email": "biz1@mail.com",
+          "firstName": "Imen",
+          "lastName": "Dali",
+          "status": "Pending"
+        },
+        {
+          "id": 8,
+          "creatinDate": "2026-01-03T00:00:00Z",
+          "clubId": 4,
+          "email": "biz2@mail.com",
+          "firstName": "Nader",
+          "lastName": "Heni",
+          "status": "Accepted"
+        }
+      ]
+    }
+  ]
+}
