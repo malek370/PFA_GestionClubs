@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/Éléments de solution/">
+    <File Path=".gitignore" />
+  </Folder>
+  <Project Path="Application/GestionClubs.Application.csproj" />
+  <Project Path="Domain/GestionClubs.Domain.csproj" />
+  <Project Path="GestionClubs/GestionClubs.API.csproj" />
+  <Project Path="Infrastructure/GestionClubs.Infrastructure.csproj" />
+</Solution>
