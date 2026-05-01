@@ -1,4 +1,5 @@
 using GestionClubs.API.Controllers;
+using GestionClubs.API.Handlers;
 using GestionClubs.Application.IServices;
 using GestionClubs.Application.Services;
 using GestionClubs.Domain.DTOs;
@@ -21,6 +22,7 @@ builder.Services.AddScoped<IClubServices, ClubServices>();
 builder.Services.AddScoped<IMembersService, MembersService>();
 builder.Services.AddScoped<IAdhesionService, AdhesionService>();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddExceptionHandler<GlobalExcpectionHandler>();
 var app = builder.Build();
 
 // Seed the database
@@ -35,7 +37,7 @@ if (app.Environment.IsDevelopment())
         opts.Title = "Documentation of GestionClubs";
     });
 }
-
+app.UseExceptionHandler(_ => { });
 app.UseHttpsRedirection();
 
 #region endpoints

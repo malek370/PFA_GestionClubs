@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GestionClubs.Application.Exceptions;
 using GestionClubs.Application.IRepositories;
 using GestionClubs.Application.IServices;
 using GestionClubs.Domain.DTOs;
@@ -19,9 +20,10 @@ namespace GestionClubs.Application.Services
         public async Task<GetClubDTO> CreateClub(CreateClubDTO createClubDTO)
         {
 
-            if (!httpContextAccessor.HttpContext.Request
-                .Headers["Roles"].ToString().Split(';').Contains("AdminPlatform"))
-                throw new UnauthorizedAccessException("Unauthorized to create a club");
+            if(await clubRepository.GetAllQueryable().AnyAsync(c => c.Name.ToUpper() == createClubDTO.Name.ToUpper()))
+            {
+                throw new ClubExistsException("Club with the same name already exists");
+            }
             var club = new Club
             {
                 Name = createClubDTO.Name,

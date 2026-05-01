@@ -1,4 +1,6 @@
-﻿using GestionClubs.Application.IRepositories;
+﻿using GestionClubs.Application.BaseExceptions;
+using GestionClubs.Application.Exceptions;
+using GestionClubs.Application.IRepositories;
 using GestionClubs.Application.IServices;
 using GestionClubs.Domain.DTOs;
 using GestionClubs.Domain.Entities;
@@ -20,7 +22,7 @@ namespace GestionClubs.Application.Services
                 .Select(member => new GetMemberDTO
                 {
                     Id = member.Id,
-                    ClubName = member.Club.Name,
+                    ClubName = member.Club!.Name,
                     FirstName = member.FirstName,
                     LastName = member.LastName,
                     Email = member.Email,
@@ -33,12 +35,12 @@ namespace GestionClubs.Application.Services
             var member = await _memberRepository.GetById(id);
             if (member == null)
             {
-                return null;
+                throw new EntityNotFoundException($"Member with ID {id} not found.");
             }
             return new GetMemberDTO
             {
                 Id = member.Id,
-                ClubName = member.Club.Name,
+                ClubName = member.Club!.Name,
                 FirstName = member.FirstName,
                 LastName = member.LastName,
                 Email = member.Email,
@@ -50,19 +52,28 @@ namespace GestionClubs.Application.Services
             var member = await _memberRepository.GetById(update.MemberId);
             if (member == null)
             {
-                throw new Exception($"Member with ID {update.MemberId} not found.");
+                throw new EntityNotFoundException($"Member with ID {update.MemberId} not found.");
             }
             member.PostInClub = update.NewPost;
             await _memberRepository.Update(member);
             return new GetMemberDTO
             {
                 Id = member.Id,
-                ClubName = member.Club.Name,
+                ClubName = member.Club!.Name,
                 FirstName = member.FirstName,
                 LastName = member.LastName,
                 Email = member.Email,
                 PostInClub = member.PostInClub.ToString()
             };
+        }
+        public async Task<bool> RemoveMember(int memberId)
+        {
+            var member = await _memberRepository.GetById(memberId);
+            if (member == null)
+            {
+                throw new EntityNotFoundException($"Member with ID {memberId} not found.");
+            }
+            return await _memberRepository.Delete(memberId);
         }
     }
 }

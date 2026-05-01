@@ -1,4 +1,6 @@
-﻿using GestionClubs.Application.IRepositories;
+﻿using GestionClubs.Application.BaseExceptions;
+using GestionClubs.Application.Exceptions;
+using GestionClubs.Application.IRepositories;
 using GestionClubs.Application.IServices;
 using GestionClubs.Domain.DTOs;
 using GestionClubs.Domain.Entities;
@@ -35,10 +37,9 @@ namespace GestionClubs.Application.Services
         public async Task<GetAdhesionDTO?> GetAdhesionById(int id)
         {
             var adhesion = await _adhesionRepository.GetById(id);
-            if (adhesion == null)
-                return null;
-
-            return new GetAdhesionDTO
+            return adhesion == null
+                ? throw new EntityNotFoundException($"Adhesion with id {id} not found")
+                : new GetAdhesionDTO
             {
                 Id = adhesion.Id,
                 Email = adhesion.Email,
@@ -50,6 +51,13 @@ namespace GestionClubs.Application.Services
         }
         public async Task<GetAdhesionDTO> AddAdhesion(CreateAdhesionDTO adhesionDto)
         {
+            if(await _adhesionRepository.GetAllQueryable().AnyAsync(a => a.ClubId == adhesionDto.ClubId && a.Email == "adhesionDto.Email"))
+               //TO CHANGE BY TAKING EMAIL FROM TOKEN
+               throw new UserAdhesionExistsException("User has already requested to join this club.");
+            if(await _memberRepository.GetAllQueryable().AnyAsync(m => m.ClubId == adhesionDto.ClubId && m.Email == "adhesionDto.Email"))
+                //TO CHANGE BY TAKING EMAIL FROM TOKEN
+                throw new UserAlreadyMemberException("User is already a member of this club.");
+
             var adhesion = new Adhesion
             {
                 ClubId = adhesionDto.ClubId,
@@ -74,7 +82,7 @@ namespace GestionClubs.Application.Services
             var adhesion = await _adhesionRepository.GetById(adhesionId);
             if (adhesion == null)
             {
-                throw new Exception("Adhesion not found");
+                throw new EntityNotFoundException($"Adhesion with id {adhesionId} not found");
             }
             adhesion.Status = Status.Accepted;
             await _memberRepository.Add(new Member
@@ -102,7 +110,7 @@ namespace GestionClubs.Application.Services
             var adhesion = await _adhesionRepository.GetById(adhesionId);
             if (adhesion == null)
             {
-                throw new Exception("Adhesion not found");
+                throw new EntityNotFoundException($"Adhesion with id {adhesionId} not found");
             }
             adhesion.Status = Status.Refused;
             var updatedAdhesion = await _adhesionRepository.Update(adhesion);
@@ -118,6 +126,10 @@ namespace GestionClubs.Application.Services
         }
         public async Task<bool> DeleteAdhesion(int id)
         {
+            if(!await _adhesionRepository.GetAllQueryable().AnyAsync(a => a.Id == id))
+            {
+                throw new EntityNotFoundException($"Adhesion with id {id} not found");
+            }
             return await _adhesionRepository.Delete(id);
         }
 

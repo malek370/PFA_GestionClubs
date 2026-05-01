@@ -1,9 +1,10 @@
-name: IdentityProvider CI/CD Pipeline
+name: IdentityProvider CI/CD Pipeline Quick and Dirty
 
 on:
   push:
     branches: [ "IdentityProvider" ]
-
+    paths:
+      - 'IdentityProvider/**'
 
 
 concurrency:

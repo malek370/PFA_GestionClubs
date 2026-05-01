@@ -26,6 +26,11 @@ namespace GestionClubs.API.Controllers
                 var result = await membersService.UpdateMemberPost(dto);
                 return Results.Ok(result);
             });
+            members.MapDelete("/{id:int}", async ([FromServices] IMembersService membersService, [FromRoute] int id) =>
+            {
+                var result = await membersService.RemoveMember(id);
+                return result ? Results.Ok() : Results.NotFound();
+            });
 
         }
     }
