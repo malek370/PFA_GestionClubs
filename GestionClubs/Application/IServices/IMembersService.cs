@@ -8,5 +8,6 @@ namespace GestionClubs.Application.IServices
         Task<GetMemberDTO?> GetMemberById(int id);
         Task<IEnumerable<GetMemberDTO>> GetMembersByClub(int clubId);
         Task<GetMemberDTO> UpdateMemberPost(UpdateMemberPostDTO update);
+        Task<bool> RemoveMember(int memberId);
     }
 }

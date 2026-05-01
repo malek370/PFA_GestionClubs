@@ -34,3 +34,12 @@ Le backend de la plateforme est développé en utilisant le framework Django, qu
 - Install from requirements File	`pip install -r requirements.txt`
 - Generate requirements File	pip freeze > requirements.txt
 - Update requirements File	`pip install --upgrade -r requirements.txt && pip freeze > requirements.txt`
+
+# Identity Provider
+## Auth service with RSA (Public private keys)
+- Offers the tokens and endpoint for public keys to allow other services to validate the token 
+- expose end points for registration , login and refresh token
+
+# GestionClubs
+## Club managment service
+- Manage clubs, members and adhesion demands
