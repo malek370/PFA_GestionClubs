@@ -1,4 +1,5 @@
-﻿using GestionClubs.Application.IServices;
+﻿using GestionClubs.API.Validators;
+using GestionClubs.Application.IServices;
 using GestionClubs.Domain.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,7 +26,7 @@ namespace GestionClubs.API.Controllers
             {
                 var result = await membersService.UpdateMemberPost(dto);
                 return Results.Ok(result);
-            });
+            }).AddEndpointFilter<ValidationFilter<UpdateMemberPostDTO>>();
             members.MapDelete("/{id:int}", async ([FromServices] IMembersService membersService, [FromRoute] int id) =>
             {
                 var result = await membersService.RemoveMember(id);

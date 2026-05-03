@@ -1,4 +1,5 @@
-﻿using GestionClubs.Application.IServices;
+﻿using GestionClubs.API.Validators;
+using GestionClubs.Application.IServices;
 using GestionClubs.Domain.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,7 +26,7 @@ namespace GestionClubs.API.Controllers
             {
                 await clubServices.CreateClub(dto);
                 return Results.Created();
-            });
+            }).AddEndpointFilter<ValidationFilter<CreateClubDTO>>();
         }
     }
 }

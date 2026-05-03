@@ -21,6 +21,7 @@ namespace GestionClubs.Infrastructure.SqliteDbContext
             services.AddScoped<IBaseRepository<Club>, ClubRepository>();
             services.AddScoped<IBaseRepository<Member>, MemberRepository>();
             services.AddScoped<IBaseRepository<Adhesion>, AdhesionRepository>();
+            services.AddScoped<IBaseRepository<User>, UserRepository>();
         }
 
         public static async Task SeedDatabaseAsync(this IServiceProvider serviceProvider)
@@ -29,16 +30,14 @@ namespace GestionClubs.Infrastructure.SqliteDbContext
             var db = scope.ServiceProvider.GetRequiredService<SqliteDbContext>();
 
             await db.Database.EnsureCreatedAsync();
-            var listclubs = await db.Clubs.ToListAsync();
 
-            if (db.Clubs.Any())
+            if (await db.Clubs.AnyAsync())
                 return;
 
             var jsonPath = Path.Combine(AppContext.BaseDirectory, "data.json");
             if (!File.Exists(jsonPath))
                 jsonPath = Path.Combine(Path.GetDirectoryName(typeof(SqliteDependencyInjection).Assembly.Location)!, "data.json");
-            var fileExist = File.Exists(jsonPath);
-            if (!fileExist)
+            if (!File.Exists(jsonPath))
                 return;
 
             var json = await File.ReadAllTextAsync(jsonPath);
@@ -49,19 +48,32 @@ namespace GestionClubs.Infrastructure.SqliteDbContext
             };
 
             var root = JsonSerializer.Deserialize<SeedDataRoot>(json, options);
-            if (root?.Clubs == null)
+            if (root == null)
                 return;
 
-            var clubs = root.Clubs;
-
-            foreach (var c in clubs)
+            if (root.Users != null)
             {
-                var club = new Club { Name = c.Name, Description = c.Description, Documents = c.Documents };
-                foreach (var m in c.Members)
-                    club.Members.Add(new Member { FirstName = m.FirstName, LastName = m.LastName, Email = m.Email, PostInClub = m.PostInClub });
-                foreach (var a in c.Adhesions)
-                    club.Adhesions.Add(new Adhesion { FirstName = a.FirstName, LastName = a.LastName, ClubId = a.ClubId, Email = a.Email, Status = a.Status });
-                db.Clubs.Add(club);
+                foreach (var u in root.Users)
+                    db.Users.Add(new User { Id = u.Id, Email = u.Email, FirstName = u.FirstName, LastName = u.LastName });
+            }
+
+            if (root.Clubs != null)
+            {
+                foreach (var c in root.Clubs)
+                    db.Clubs.Add(new Club { Id = c.Id, Name = c.Name, Description = c.Description, Documents = c.Documents });
+            }
+
+
+            if (root.Members != null)
+            {
+                foreach (var m in root.Members)
+                    db.Members.Add(new Member { Id = m.Id, ClubId = m.ClubId, UserId = m.UserId, PostInClub = m.PostInClub });
+            }
+
+            if (root.Adhesions != null)
+            {
+                foreach (var a in root.Adhesions)
+                    db.Adhesions.Add(new Adhesion { Id = a.Id, ClubId = a.ClubId, UserId = a.UserId, Status = a.Status });
             }
 
             await db.SaveChangesAsync();
@@ -69,32 +81,43 @@ namespace GestionClubs.Infrastructure.SqliteDbContext
 
         private sealed class SeedDataRoot
         {
-            public List<ClubSeedData> Clubs { get; set; } = [];
+            public List<UserSeedData>? Users { get; set; }
+            public List<ClubSeedData>? Clubs { get; set; }
+            public List<MemberSeedData>? Members { get; set; }
+            public List<AdhesionSeedData>? Adhesions { get; set; }
+        }
+
+        private sealed class UserSeedData
+        {
+            public int Id { get; set; }
+            public string Email { get; set; } = string.Empty;
+            public string FirstName { get; set; } = string.Empty;
+            public string LastName { get; set; } = string.Empty;
         }
 
         private sealed class ClubSeedData
         {
+            public int Id { get; set; }
             public string Name { get; set; } = string.Empty;
             public string Description { get; set; } = string.Empty;
             public System.Collections.ObjectModel.Collection<string> Documents { get; set; } = [];
-            public List<MemberSeedData> Members { get; set; } = [];
-            public List<AdhesionSeedData> Adhesions { get; set; } = [];
         }
 
         private sealed class MemberSeedData
         {
-            public string FirstName { get; set; } = string.Empty;
-            public string LastName { get; set; } = string.Empty;
-            public string Email { get; set; } = string.Empty;
+            public int Id { get; set; }
+            public int ClubId { get; set; }
+            [JsonPropertyName("usertId")]
+            public int UserId { get; set; }
             public ClubPost PostInClub { get; set; }
         }
 
         private sealed class AdhesionSeedData
         {
+            public int Id { get; set; }
             public int ClubId { get; set; }
-            public string FirstName { get; set; } = string.Empty;
-            public string LastName { get; set; } = string.Empty;
-            public string Email { get; set; } = string.Empty;
+            [JsonPropertyName("usertId")]
+            public int UserId { get; set; }
             public Status Status { get; set; }
         }
     }

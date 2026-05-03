@@ -16,6 +16,8 @@ namespace GestionClubs.Infrastructure.SqliteDbContext.Repositories
         {
             await _context.Adhesions.AddAsync(entity);
             await _context.SaveChangesAsync();
+            entity.Club = await _context.Clubs.FirstOrDefaultAsync(c => c.Id == entity.ClubId);
+            entity.User = await _context.Users.FirstOrDefaultAsync(u => u.Id == entity.UserId);
             return entity;
         }
 
@@ -33,23 +35,25 @@ namespace GestionClubs.Infrastructure.SqliteDbContext.Repositories
 
         public async Task<IEnumerable<Adhesion>> GetAll()
         {
-            return await _context.Adhesions.ToListAsync();
+            return await _context.Adhesions.Include(adh => adh.User).ToListAsync();
         }
 
         public  IQueryable<Adhesion> GetAllQueryable()
         {
-            return  _context.Adhesions.AsQueryable();
+            return  _context.Adhesions.Include(adh => adh.User).AsQueryable();
         }
 
         public Task<Adhesion?> GetById(int id)
         {
-            return _context.Adhesions.FirstOrDefaultAsync(adh=> adh.Id == id);
+            return _context.Adhesions.Include(adh => adh.User).FirstOrDefaultAsync(adh=> adh.Id == id);
         }
 
         public async Task<Adhesion> Update(Adhesion entity)
         {
             _context.Adhesions.Update(entity);
             await _context.SaveChangesAsync(); 
+            entity.Club= await _context.Clubs.FirstOrDefaultAsync(c => c.Id == entity.ClubId);
+            entity.User= await _context.Users.FirstOrDefaultAsync(u => u.Id == entity.UserId);
             return entity;
         }
     }

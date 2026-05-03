@@ -12,19 +12,22 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["GestionClubs/GestionClubs.csproj", "GestionClubs/"]
-RUN dotnet restore "./GestionClubs/GestionClubs.csproj"
+COPY ["GestionClubs/GestionClubs.API.csproj", "GestionClubs/"]
+COPY ["Application/GestionClubs.Application.csproj", "Application/"]
+COPY ["Infrastructure/GestionClubs.Infrastructure.csproj", "Infrastructure/"]
+COPY ["Domain/GestionClubs.Domain.csproj", "Domain/"]
+RUN dotnet restore "./GestionClubs/GestionClubs.API.csproj"
 COPY . .
 WORKDIR "/src/GestionClubs"
-RUN dotnet build "./GestionClubs.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./GestionClubs.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # Cette étape permet de publier le projet de service à copier dans la phase finale
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./GestionClubs.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./GestionClubs.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # Cette phase est utilisée en production ou lors de l’exécution à partir de VS en mode normal (par défaut quand la configuration de débogage n’est pas utilisée)
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "GestionClubs.dll"]
+ENTRYPOINT ["dotnet", "GestionClubs.API.dll"]

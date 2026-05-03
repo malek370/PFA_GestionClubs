@@ -1,264 +1,268 @@
 {
-  "clubs": [
+  "users": [
     {
       "id": 1,
-      "creatinDate": "2026-01-01T00:00:00Z",
-      "name": "Tech Innovators Club",
-      "description": "A club for students passionate about technology and innovation.",
-      "documents": [ "charter.pdf", "rules.docx" ],
-      "members": [
-        {
-          "id": 1,
-          "creatinDate": "2026-01-02T00:00:00Z",
-          "clubId": 1,
-          "firstName": "Ali",
-          "lastName": "Ben Salah",
-          "email": "ali@club.com",
-          "postInClub": "President"
-        },
-        {
-          "id": 2,
-          "creatinDate": "2026-01-02T00:00:00Z",
-          "clubId": 1,
-          "firstName": "Sara",
-          "lastName": "Trabelsi",
-          "email": "sara@club.com",
-          "postInClub": "VicePresident"
-        },
-        {
-          "id": 3,
-          "creatinDate": "2026-01-02T00:00:00Z",
-          "clubId": 1,
-          "firstName": "Youssef",
-          "lastName": "Gharbi",
-          "email": "youssef@club.com",
-          "postInClub": "Secretary"
-        },
-        {
-          "id": 4,
-          "creatinDate": "2026-01-02T00:00:00Z",
-          "clubId": 1,
-          "firstName": "Meriem",
-          "lastName": "Jaziri",
-          "email": "meriem@club.com",
-          "postInClub": "Member"
-        }
-      ],
-      "adhesions": [
-        {
-          "id": 1,
-          "creatinDate": "2026-01-03T00:00:00Z",
-          "clubId": 1,
-          "email": "new1@mail.com",
-          "firstName": "Hatem",
-          "lastName": "Saidi",
-          "status": "Pending"
-        },
-        {
-          "id": 2,
-          "creatinDate": "2026-01-03T00:00:00Z",
-          "clubId": 1,
-          "email": "new2@mail.com",
-          "firstName": "Amal",
-          "lastName": "Brahmi",
-          "status": "Accepted"
-        }
-      ]
+      "email": "alice@example.com",
+      "firstName": "Alice",
+      "lastName": "Smith",
+      "creatinDate": "2026-01-01T00:00:00Z"
     },
     {
       "id": 2,
-      "creatinDate": "2026-01-01T00:00:00Z",
-      "name": "Art & Culture Club",
-      "description": "Exploring creativity through art and cultural events.",
-      "documents": [ "agenda.pdf" ],
-      "members": [
-        {
-          "id": 5,
-          "creatinDate": "2026-01-02T00:00:00Z",
-          "clubId": 2,
-          "firstName": "Nour",
-          "lastName": "Khaled",
-          "email": "nour@club.com",
-          "postInClub": "President"
-        },
-        {
-          "id": 6,
-          "creatinDate": "2026-01-02T00:00:00Z",
-          "clubId": 2,
-          "firstName": "Omar",
-          "lastName": "Mansour",
-          "email": "omar@club.com",
-          "postInClub": "Treasurer"
-        },
-        {
-          "id": 7,
-          "creatinDate": "2026-01-02T00:00:00Z",
-          "clubId": 2,
-          "firstName": "Leila",
-          "lastName": "Ayadi",
-          "email": "leila@club.com",
-          "postInClub": "Secretary"
-        },
-        {
-          "id": 8,
-          "creatinDate": "2026-01-02T00:00:00Z",
-          "clubId": 2,
-          "firstName": "Karim",
-          "lastName": "Feki",
-          "email": "karim@club.com",
-          "postInClub": "Member"
-        }
-      ],
-      "adhesions": [
-        {
-          "id": 3,
-          "creatinDate": "2026-01-03T00:00:00Z",
-          "clubId": 2,
-          "email": "art1@mail.com",
-          "firstName": "Rim",
-          "lastName": "Zouari",
-          "status": "Pending"
-        },
-        {
-          "id": 4,
-          "creatinDate": "2026-01-03T00:00:00Z",
-          "clubId": 2,
-          "email": "art2@mail.com",
-          "firstName": "Sami",
-          "lastName": "Chebbi",
-          "status": "Refused"
-        }
-      ]
+      "email": "bob@example.com",
+      "firstName": "Bob",
+      "lastName": "Johnson",
+      "creatinDate": "2026-01-01T00:00:00Z"
     },
     {
       "id": 3,
-      "creatinDate": "2026-01-01T00:00:00Z",
-      "name": "Sports Club",
-      "description": "Promoting physical fitness and teamwork.",
-      "documents": [ "schedule.pdf" ],
-      "members": [
-        {
-          "id": 9,
-          "creatinDate": "2026-01-02T00:00:00Z",
-          "clubId": 3,
-          "firstName": "Walid",
-          "lastName": "Haddad",
-          "email": "walid@club.com",
-          "postInClub": "President"
-        },
-        {
-          "id": 10,
-          "creatinDate": "2026-01-02T00:00:00Z",
-          "clubId": 3,
-          "firstName": "Firas",
-          "lastName": "Ben Ali",
-          "email": "firas@club.com",
-          "postInClub": "VicePresident"
-        },
-        {
-          "id": 11,
-          "creatinDate": "2026-01-02T00:00:00Z",
-          "clubId": 3,
-          "firstName": "Ines",
-          "lastName": "Riahi",
-          "email": "ines@club.com",
-          "postInClub": "HeadOfDepartment"
-        },
-        {
-          "id": 12,
-          "creatinDate": "2026-01-02T00:00:00Z",
-          "clubId": 3,
-          "firstName": "Adem",
-          "lastName": "Sassi",
-          "email": "adem@club.com",
-          "postInClub": "Member"
-        }
-      ],
-      "adhesions": [
-        {
-          "id": 5,
-          "creatinDate": "2026-01-03T00:00:00Z",
-          "clubId": 3,
-          "email": "sport1@mail.com",
-          "firstName": "Hiba",
-          "lastName": "Mejri",
-          "status": "Accepted"
-        },
-        {
-          "id": 6,
-          "creatinDate": "2026-01-03T00:00:00Z",
-          "clubId": 3,
-          "email": "sport2@mail.com",
-          "firstName": "Lotfi",
-          "lastName": "Karray",
-          "status": "Pending"
-        }
-      ]
+      "email": "charlie@example.com",
+      "firstName": "Charlie",
+      "lastName": "Brown",
+      "creatinDate": "2026-01-01T00:00:00Z"
     },
     {
       "id": 4,
-      "creatinDate": "2026-01-01T00:00:00Z",
-      "name": "Entrepreneurship Club",
-      "description": "Helping students build startups and business skills.",
-      "documents": [ "business-plan.pdf" ],
-      "members": [
-        {
-          "id": 13,
-          "creatinDate": "2026-01-02T00:00:00Z",
-          "clubId": 4,
-          "firstName": "Zied",
-          "lastName": "Ghannouchi",
-          "email": "zied@club.com",
-          "postInClub": "President"
-        },
-        {
-          "id": 14,
-          "creatinDate": "2026-01-02T00:00:00Z",
-          "clubId": 4,
-          "firstName": "Maha",
-          "lastName": "Toumi",
-          "email": "maha@club.com",
-          "postInClub": "Treasurer"
-        },
-        {
-          "id": 15,
-          "creatinDate": "2026-01-02T00:00:00Z",
-          "clubId": 4,
-          "firstName": "Tarek",
-          "lastName": "Chahed",
-          "email": "tarek@club.com",
-          "postInClub": "Secretary"
-        },
-        {
-          "id": 16,
-          "creatinDate": "2026-01-02T00:00:00Z",
-          "clubId": 4,
-          "firstName": "Salma",
-          "lastName": "Ben Amor",
-          "email": "salma@club.com",
-          "postInClub": "Member"
-        }
-      ],
-      "adhesions": [
-        {
-          "id": 7,
-          "creatinDate": "2026-01-03T00:00:00Z",
-          "clubId": 4,
-          "email": "biz1@mail.com",
-          "firstName": "Imen",
-          "lastName": "Dali",
-          "status": "Pending"
-        },
-        {
-          "id": 8,
-          "creatinDate": "2026-01-03T00:00:00Z",
-          "clubId": 4,
-          "email": "biz2@mail.com",
-          "firstName": "Nader",
-          "lastName": "Heni",
-          "status": "Accepted"
-        }
-      ]
+      "email": "diana@example.com",
+      "firstName": "Diana",
+      "lastName": "Prince",
+      "creatinDate": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": 5,
+      "email": "edward@example.com",
+      "firstName": "Edward",
+      "lastName": "Norton",
+      "creatinDate": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": 6,
+      "email": "fiona@example.com",
+      "firstName": "Fiona",
+      "lastName": "Davis",
+      "creatinDate": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": 7,
+      "email": "george@example.com",
+      "firstName": "George",
+      "lastName": "Miller",
+      "creatinDate": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": 8,
+      "email": "hannah@example.com",
+      "firstName": "Hannah",
+      "lastName": "Wilson",
+      "creatinDate": "2026-01-01T00:00:00Z"
+    }
+  ],
+  "clubs": [
+    {
+      "id": 1,
+      "name": "Tech Club",
+      "description": "A club for tech enthusiasts",
+      "documents": [ "doc1.pdf" ],
+      "creatinDate": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": 2,
+      "name": "Art Club",
+      "description": "Creative arts and design",
+      "documents": [ "doc2.pdf" ],
+      "creatinDate": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": 3,
+      "name": "Sports Club",
+      "description": "All about sports activities",
+      "documents": [ "doc3.pdf" ],
+      "creatinDate": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": 4,
+      "name": "Music Club",
+      "description": "Music lovers and performers",
+      "documents": [ "doc4.pdf" ],
+      "creatinDate": "2026-01-01T00:00:00Z"
+    }
+  ],
+  "members": [
+    {
+      "id": 1,
+      "clubId": 1,
+      "usertId": 1,
+      "postInClub": "President",
+      "creatinDate": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": 2,
+      "clubId": 1,
+      "usertId": 2,
+      "postInClub": "VicePresident",
+      "creatinDate": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": 3,
+      "clubId": 1,
+      "usertId": 3,
+      "postInClub": "Secretary",
+      "creatinDate": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": 4,
+      "clubId": 1,
+      "usertId": 4,
+      "postInClub": "Member",
+      "creatinDate": "2026-01-01T00:00:00Z"
+    },
+
+    {
+      "id": 5,
+      "clubId": 2,
+      "usertId": 1,
+      "postInClub": "Treasurer",
+      "creatinDate": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": 6,
+      "clubId": 2,
+      "usertId": 2,
+      "postInClub": "President",
+      "creatinDate": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": 7,
+      "clubId": 2,
+      "usertId": 5,
+      "postInClub": "Secretary",
+      "creatinDate": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": 8,
+      "clubId": 2,
+      "usertId": 6,
+      "postInClub": "Member",
+      "creatinDate": "2026-01-01T00:00:00Z"
+    },
+
+    {
+      "id": 9,
+      "clubId": 3,
+      "usertId": 2,
+      "postInClub": "President",
+      "creatinDate": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": 10,
+      "clubId": 3,
+      "usertId": 3,
+      "postInClub": "VicePresident",
+      "creatinDate": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": 11,
+      "clubId": 3,
+      "usertId": 7,
+      "postInClub": "Member",
+      "creatinDate": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": 12,
+      "clubId": 3,
+      "usertId": 8,
+      "postInClub": "Member",
+      "creatinDate": "2026-01-01T00:00:00Z"
+    },
+
+    {
+      "id": 13,
+      "clubId": 4,
+      "usertId": 1,
+      "postInClub": "President",
+      "creatinDate": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": 14,
+      "clubId": 4,
+      "usertId": 4,
+      "postInClub": "VicePresident",
+      "creatinDate": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": 15,
+      "clubId": 4,
+      "usertId": 5,
+      "postInClub": "Treasurer",
+      "creatinDate": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": 16,
+      "clubId": 4,
+      "usertId": 6,
+      "postInClub": "Member",
+      "creatinDate": "2026-01-01T00:00:00Z"
+    }
+  ],
+  "adhesions": [
+    {
+      "id": 1,
+      "clubId": 1,
+      "usertId": 5,
+      "status": "Pending",
+      "creatinDate": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": 2,
+      "clubId": 1,
+      "usertId": 6,
+      "status": "Accepted",
+      "creatinDate": "2026-01-01T00:00:00Z"
+    },
+
+    {
+      "id": 3,
+      "clubId": 2,
+      "usertId": 3,
+      "status": "Pending",
+      "creatinDate": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": 4,
+      "clubId": 2,
+      "usertId": 4,
+      "status": "Refused",
+      "creatinDate": "2026-01-01T00:00:00Z"
+    },
+
+    {
+      "id": 5,
+      "clubId": 3,
+      "usertId": 1,
+      "status": "Pending",
+      "creatinDate": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": 6,
+      "clubId": 3,
+      "usertId": 5,
+      "status": "Accepted",
+      "creatinDate": "2026-01-01T00:00:00Z"
+    },
+
+    {
+      "id": 7,
+      "clubId": 4,
+      "usertId": 2,
+      "status": "Pending",
+      "creatinDate": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": 8,
+      "clubId": 4,
+      "usertId": 7,
+      "status": "Refused",
+      "creatinDate": "2026-01-01T00:00:00Z"
     }
   ]
 }

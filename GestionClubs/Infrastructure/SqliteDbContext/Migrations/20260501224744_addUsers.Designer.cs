@@ -3,6 +3,7 @@ using System;
 using GestionClubs.Infrastructure.SqliteDbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GestionClubs.Infrastructure.SqliteDbContext.Migrations
 {
     [DbContext(typeof(SqliteDbContext))]
-    partial class SqliteDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260501224744_addUsers")]
+    partial class addUsers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.15");
@@ -32,7 +35,10 @@ namespace GestionClubs.Infrastructure.SqliteDbContext.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("UserId")
+                    b.Property<int?>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UsertId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
@@ -85,7 +91,10 @@ namespace GestionClubs.Infrastructure.SqliteDbContext.Migrations
                     b.Property<int>("PostInClub")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("UserId")
+                    b.Property<int?>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UsertId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
@@ -133,9 +142,7 @@ namespace GestionClubs.Infrastructure.SqliteDbContext.Migrations
 
                     b.HasOne("GestionClubs.Domain.Entities.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
                     b.Navigation("Club");
 
@@ -152,9 +159,7 @@ namespace GestionClubs.Infrastructure.SqliteDbContext.Migrations
 
                     b.HasOne("GestionClubs.Domain.Entities.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
                     b.Navigation("Club");
 

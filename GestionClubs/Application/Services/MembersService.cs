@@ -17,18 +17,22 @@ namespace GestionClubs.Application.Services
     {
         public async Task<IEnumerable<GetMemberDTO>> GetMembersByClub(int clubId)
         {
-            return await _memberRepository.GetAllQueryable()
+            var members = await _memberRepository.GetAllQueryable()
                 .Where(member => member.ClubId == clubId)
                 .Select(member => new GetMemberDTO
                 {
                     Id = member.Id,
                     ClubName = member.Club!.Name,
-                    FirstName = member.FirstName,
-                    LastName = member.LastName,
-                    Email = member.Email,
+                    User = new UserDTO
+                    {
+                        FirstName = member.User!.FirstName,
+                        LastName = member.User!.LastName,
+                        Email = member.User!.Email
+                    },
                     PostInClub = member.PostInClub.ToString()
                 })
                 .ToListAsync();
+            return members;
         }
         public async Task<GetMemberDTO?> GetMemberById(int id)
         {
@@ -41,9 +45,12 @@ namespace GestionClubs.Application.Services
             {
                 Id = member.Id,
                 ClubName = member.Club!.Name,
-                FirstName = member.FirstName,
-                LastName = member.LastName,
-                Email = member.Email,
+                User = new UserDTO
+                {
+                    FirstName = member.User!.FirstName,
+                    LastName = member.User!.LastName,
+                    Email = member.User!.Email
+                },
                 PostInClub = member.PostInClub.ToString()
             };
         }
@@ -55,15 +62,18 @@ namespace GestionClubs.Application.Services
                 throw new EntityNotFoundException($"Member with ID {update.MemberId} not found.");
             }
             member.PostInClub = update.NewPost;
-            await _memberRepository.Update(member);
+            var updatedMember = await _memberRepository.Update(member);
             return new GetMemberDTO
             {
-                Id = member.Id,
-                ClubName = member.Club!.Name,
-                FirstName = member.FirstName,
-                LastName = member.LastName,
-                Email = member.Email,
-                PostInClub = member.PostInClub.ToString()
+                Id = updatedMember.Id,
+                ClubName = updatedMember.Club!.Name,
+                User = new UserDTO
+                {
+                    FirstName = updatedMember.User!.FirstName,
+                    LastName = updatedMember.User!.LastName,
+                    Email = updatedMember.User!.Email
+                },
+                PostInClub = updatedMember.PostInClub.ToString()
             };
         }
         public async Task<bool> RemoveMember(int memberId)

@@ -14,10 +14,13 @@ using System.Threading.Tasks;
 
 namespace GestionClubs.Application.Services
 {
-    public class AdhesionService(IBaseRepository<Adhesion> adhesionRepository, IBaseRepository<Member> memberRepository) : IAdhesionService
+    public class AdhesionService(IBaseRepository<Adhesion> adhesionRepository, 
+        IBaseRepository<Member> memberRepository,
+        IBaseRepository<User> userRepository) : IAdhesionService
     {
         private readonly IBaseRepository<Adhesion> _adhesionRepository = adhesionRepository;
         private readonly IBaseRepository<Member> _memberRepository = memberRepository;
+        private readonly IBaseRepository<User> _userRepository = userRepository;
         public async Task<IEnumerable<GetAdhesionDTO>> GetAdhesionsByClub(int clubId)
         {
             return await _adhesionRepository.GetAllQueryable()
@@ -26,55 +29,64 @@ namespace GestionClubs.Application.Services
                 .Select(adh => new GetAdhesionDTO
                 {
                     Id = adh.Id,
-                    Email = adh.Email,
+                    User = new UserDTO
+                    {
+                        FirstName = adh.User!.FirstName,
+                        LastName = adh.User!.LastName,
+                        Email = adh.User!.Email
+                    },
                     Status = adh.Status.ToString(),
                     ClubName = adh.Club!.Name,
-                    FirstName = adh.FirstName,
-                    LastName = adh.LastName
                 })
                 .ToListAsync();
         }
         public async Task<GetAdhesionDTO?> GetAdhesionById(int id)
         {
-            var adhesion = await _adhesionRepository.GetById(id);
-            return adhesion == null
-                ? throw new EntityNotFoundException($"Adhesion with id {id} not found")
-                : new GetAdhesionDTO
-            {
-                Id = adhesion.Id,
-                Email = adhesion.Email,
-                Status = adhesion.Status.ToString(),
-                ClubName = adhesion.Club!.Name,
-                FirstName = adhesion.FirstName,
-                LastName = adhesion.LastName
-            };
+            var adhesion = await _adhesionRepository.GetAllQueryable()
+                .Include(adh => adh.Club)
+                .Select(adh => new GetAdhesionDTO
+                {
+                    Id = adh.Id,
+                    Status = adh.Status.ToString(),
+                    ClubName = adh.Club!.Name,
+                    User = new UserDTO
+                    {
+                        FirstName = adh.User!.FirstName,
+                        LastName = adh.User!.LastName,
+                        Email = adh.User!.Email
+                    }
+                })
+                .FirstOrDefaultAsync(adh => adh.Id == id);
+             return adhesion ?? 
+                throw new EntityNotFoundException($"Adhesion with id {id} not found");
         }
         public async Task<GetAdhesionDTO> AddAdhesion(CreateAdhesionDTO adhesionDto)
         {
-            if(await _adhesionRepository.GetAllQueryable().AnyAsync(a => a.ClubId == adhesionDto.ClubId && a.Email == "adhesionDto.Email"))
-               //TO CHANGE BY TAKING EMAIL FROM TOKEN
+            var emailTmp = "alice@example.com"; //TO CHANGE BY TAKING EMAIL FROM TOKEN
+            if (await _adhesionRepository.GetAllQueryable().AnyAsync(a => a.ClubId == adhesionDto.ClubId && a.User!.Email == emailTmp))
                throw new UserAdhesionExistsException("User has already requested to join this club.");
-            if(await _memberRepository.GetAllQueryable().AnyAsync(m => m.ClubId == adhesionDto.ClubId && m.Email == "adhesionDto.Email"))
-                //TO CHANGE BY TAKING EMAIL FROM TOKEN
+            if(await _memberRepository.GetAllQueryable().AnyAsync(m => m.ClubId == adhesionDto.ClubId && m.User!.Email == emailTmp))
                 throw new UserAlreadyMemberException("User is already a member of this club.");
-
+            var user = await _userRepository.GetAllQueryable().FirstOrDefaultAsync(u => u.Email == emailTmp);
+            if (user == null)throw new EntityNotFoundException($"User with email {emailTmp} not found");
             var adhesion = new Adhesion
             {
                 ClubId = adhesionDto.ClubId,
-                Email = "adhesionDto.Email",//TO CHANGE BY TAKING EMAIL FROM TOKEN
-                FirstName = "adhesionDto.FirstName",
-                LastName = "adhesionDto.LastName",
+                User = user,
                 Status = Status.Pending // Assuming a default status
             };
             var addedAdhesion = await _adhesionRepository.Add(adhesion);
             return new GetAdhesionDTO
             {
                 Id = addedAdhesion.Id,
-                Email = addedAdhesion.Email,
                 Status = addedAdhesion.Status.ToString(),
                 ClubName = addedAdhesion.Club!.Name,
-                FirstName = addedAdhesion.FirstName,
-                LastName = addedAdhesion.LastName
+                User = new UserDTO
+                {
+                    FirstName = addedAdhesion.User!.FirstName,
+                    LastName = addedAdhesion.User!.LastName,
+                    Email = addedAdhesion.User!.Email
+                }
             };
         }
         public async Task<GetAdhesionDTO?> AcceptAdhesion(int adhesionId)
@@ -84,13 +96,17 @@ namespace GestionClubs.Application.Services
             {
                 throw new EntityNotFoundException($"Adhesion with id {adhesionId} not found");
             }
+            if( await _memberRepository.GetAllQueryable()
+                .AnyAsync(m => m.ClubId == adhesion.ClubId && m.User!.Email == adhesion.User!.Email))
+            {
+                throw new UserAlreadyMemberException("User is already a member of this club.");
+            }
+            var user = await _userRepository.GetAllQueryable().FirstOrDefaultAsync(u => u.Id == adhesion.UserId) ?? throw new EntityNotFoundException($"User with id {adhesion.UserId} not found");
             adhesion.Status = Status.Accepted;
             await _memberRepository.Add(new Member
             {
                 ClubId = adhesion.ClubId,
-                Email = "adhesionDto.Email",//TO CHANGE BY TAKING EMAIL FROM TOKEN
-                FirstName = "adhesionDto.FirstName",
-                LastName = "adhesionDto.LastName",
+                UserId = adhesion.UserId,
                 PostInClub = ClubPost.Member // Assuming a default post
 
             });
@@ -98,11 +114,14 @@ namespace GestionClubs.Application.Services
             return new GetAdhesionDTO
             {
                 Id = updatedAdhesion.Id,
-                Email = updatedAdhesion.Email,
                 Status = updatedAdhesion.Status.ToString(),
                 ClubName = updatedAdhesion.Club!.Name,
-                FirstName = updatedAdhesion.FirstName,
-                LastName = updatedAdhesion.LastName
+                User = new UserDTO
+                {
+                    FirstName = updatedAdhesion.User!.FirstName,
+                    LastName = updatedAdhesion.User!.LastName,
+                    Email = updatedAdhesion.User!.Email
+                }
             };
         }
         public async Task<GetAdhesionDTO?> RefuseAdhesion(int adhesionId)
@@ -113,15 +132,25 @@ namespace GestionClubs.Application.Services
                 throw new EntityNotFoundException($"Adhesion with id {adhesionId} not found");
             }
             adhesion.Status = Status.Refused;
+            if(await _memberRepository.GetAllQueryable()
+                .AnyAsync(m => m.ClubId == adhesion.ClubId && m.User!.Email == adhesion.User!.Email))
+            {
+                throw new UserAlreadyMemberException("User is already a member of this club.");
+            }
+            var user = await _userRepository.GetAllQueryable().FirstOrDefaultAsync(u => u.Id == adhesion.UserId) ?? throw new EntityNotFoundException($"User with id {adhesion.UserId} not found");
+
             var updatedAdhesion = await _adhesionRepository.Update(adhesion);
             return new GetAdhesionDTO
             {
                 Id = updatedAdhesion.Id,
-                Email = updatedAdhesion.Email,
                 Status = updatedAdhesion.Status.ToString(),
                 ClubName = updatedAdhesion.Club!.Name,
-                FirstName = updatedAdhesion.FirstName,
-                LastName = updatedAdhesion.LastName
+                User = new UserDTO
+                {
+                    FirstName = updatedAdhesion.User!.FirstName,
+                    LastName = updatedAdhesion.User!.LastName,
+                    Email = updatedAdhesion.User!.Email
+                }
             };
         }
         public async Task<bool> DeleteAdhesion(int id)

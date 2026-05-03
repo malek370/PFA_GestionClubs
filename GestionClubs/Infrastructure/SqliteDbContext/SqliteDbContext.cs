@@ -18,6 +18,7 @@ namespace GestionClubs.Infrastructure.SqliteDbContext
         public DbSet<Club> Clubs { get; set; }
         public DbSet<Adhesion> Adhesions { get; set; }
         public DbSet<Member> Members { get; set; }
+        public DbSet<User> Users { get; set; }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
@@ -37,6 +38,7 @@ namespace GestionClubs.Infrastructure.SqliteDbContext
             modelBuilder.Entity<Club>().ToTable("Clubs");
             modelBuilder.Entity<Adhesion>().ToTable("Adhesions");
             modelBuilder.Entity<Member>().ToTable("Members");
+            modelBuilder.Entity<User>().ToTable("Users");
 
         }
     }
