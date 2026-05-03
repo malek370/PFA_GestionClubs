@@ -11,10 +11,8 @@ namespace GestionClubs.Domain.Entities
     {
         public  required int ClubId { get; set; }
         public Club? Club { get; set; }
-        public  required string  Email { get; set; }
-
-        public required string FirstName { get; set; }
-        public required string LastName { get; set; } 
+        public int UserId { get; set; }
+        public User? User { get; set; }
         public  Status Status { get; set; }
     }
 }

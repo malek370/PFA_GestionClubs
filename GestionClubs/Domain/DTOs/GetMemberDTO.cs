@@ -10,9 +10,7 @@ namespace GestionClubs.Domain.DTOs
     {
         public int Id { get; set; }
         public string ClubName { get; set; } = "";
-        public string FirstName { get; set; } = "";
-        public string LastName { get; set; } = "";
-        public string Email { get; set; } = "";
+        public UserDTO? User { get; set; }
         public string PostInClub { get; set; } = "";
     }
 }

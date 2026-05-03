@@ -1,4 +1,5 @@
-﻿using GestionClubs.Application.IServices;
+﻿using GestionClubs.API.Validators;
+using GestionClubs.Application.IServices;
 using GestionClubs.Domain.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,7 +27,7 @@ namespace GestionClubs.API.Controllers
             {
                 var result = await adhesionService.AddAdhesion(dto);
                 return Results.Created($"/api/adhesions/{result.Id}", result);
-            });
+            }).AddEndpointFilter<ValidationFilter<CreateAdhesionDTO>>();
 
             adhesions.MapPut("/{id:int}/accept", async ([FromServices] IAdhesionService adhesionService, [FromRoute] int id) =>
             {

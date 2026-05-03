@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GestionClubs.Application.BaseExceptions;
 using GestionClubs.Application.Exceptions;
 using GestionClubs.Application.IRepositories;
 using GestionClubs.Application.IServices;
@@ -15,7 +16,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GestionClubs.Application.Services
 {
-    public class ClubServices(IBaseRepository<Club> clubRepository, IHttpContextAccessor httpContextAccessor) : IClubServices
+    public class ClubServices(IBaseRepository<Club> clubRepository,
+        IBaseRepository<User> userRepository) : IClubServices
     {
         public async Task<GetClubDTO> CreateClub(CreateClubDTO createClubDTO)
         {
@@ -29,13 +31,13 @@ namespace GestionClubs.Application.Services
                 Name = createClubDTO.Name,
                 Description = createClubDTO.Description,
                 Members = new Collection<Member>(),
+                Documents = createClubDTO.Documents
             };
+            var user = await userRepository.GetAllQueryable().FirstOrDefaultAsync(u => u.Email == createClubDTO.Email) ?? throw new EntityNotFoundException("User not found");
             club.Members.Add(new Member
             {
 
-                FirstName = createClubDTO.FirstName,
-                LastName = createClubDTO.Name,
-                Email = createClubDTO.Email,
+                User = user,
                 PostInClub = ClubPost.President
             });
             var addedClub = await clubRepository.Add(club);

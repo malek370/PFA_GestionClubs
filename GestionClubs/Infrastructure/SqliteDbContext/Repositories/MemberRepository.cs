@@ -29,17 +29,17 @@ namespace GestionClubs.Infrastructure.SqliteDbContext.Repositories
 
         public async Task<IEnumerable<Member>> GetAll()
         {
-            return await _context.Members.ToListAsync();
+            return await _context.Members.Include(m => m.User).ToListAsync();
         }
 
         public IQueryable<Member> GetAllQueryable()
         {
-            return _context.Members.AsQueryable();
+            return _context.Members.Include(m => m.User).AsQueryable();
         }
 
         public Task<Member?> GetById(int id)
         {
-            return _context.Members.Include(m => m.Club).FirstOrDefaultAsync(m => m.Id == id);
+            return _context.Members.Include(m => m.Club).Include(m => m.User).FirstOrDefaultAsync(m => m.Id == id);
         }
 
         public async Task<Member> Update(Member entity)
