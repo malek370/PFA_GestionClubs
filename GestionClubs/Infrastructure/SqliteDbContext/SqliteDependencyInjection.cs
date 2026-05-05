@@ -55,26 +55,69 @@ namespace GestionClubs.Infrastructure.SqliteDbContext
             if (root.Users != null)
             {
                 foreach (var u in root.Users)
-                    db.Users.Add(new User { Id = u.Id, Email = u.Email, FirstName = u.FirstName, LastName = u.LastName });
+                    db.Users.Add(new User
+                    {
+                        Id = u.Id,
+                        Email = u.Email,
+                        FirstName = u.FirstName,
+                        LastName = u.LastName,
+                        CreatinDate = u.CreatinDate
+                    });
             }
 
             if (root.Clubs != null)
             {
                 foreach (var c in root.Clubs)
-                    db.Clubs.Add(new Club { Id = c.Id, Name = c.Name, Description = c.Description, Documents = c.Documents });
-            }
+                {
+                    db.Clubs.Add(new Club
+                    {
+                        Id = c.Id,
+                        Name = c.Name,
+                        Description = c.Description,
+                        Documents = c.Documents,
+                        CreatinDate = c.CreatinDate
+                    });
 
+                    if (c.Members != null)
+                    {
+                        foreach (var m in c.Members)
+                            db.Members.Add(new Member
+                            {
+                                Id = m.Id,
+                                ClubId = m.ClubId,
+                                UserId = m.UserId,
+                                PostInClub = m.PostInClub,
+                                CreatinDate = m.CreatinDate
+                            });
+                    }
 
-            if (root.Members != null)
-            {
-                foreach (var m in root.Members)
-                    db.Members.Add(new Member { Id = m.Id, ClubId = m.ClubId, UserId = m.UserId, PostInClub = m.PostInClub });
-            }
+                    if (c.Adhesions != null)
+                    {
+                        foreach (var a in c.Adhesions)
+                            db.Adhesions.Add(new Adhesion
+                            {
+                                Id = a.Id,
+                                ClubId = a.ClubId,
+                                UserId = a.UserId,
+                                Status = a.Status,
+                                CreatinDate = a.CreatinDate
+                            });
+                    }
 
-            if (root.Adhesions != null)
-            {
-                foreach (var a in root.Adhesions)
-                    db.Adhesions.Add(new Adhesion { Id = a.Id, ClubId = a.ClubId, UserId = a.UserId, Status = a.Status });
+                    if (c.Annoucements != null)
+                    {
+                        foreach (var ann in c.Annoucements)
+                            db.Annoucements.Add(new Annoucement
+                            {
+                                Id = ann.Id,
+                                ClubId = ann.ClubId,
+                                Title = ann.Title,
+                                Content = ann.Content,
+                                IsPublic = ann.IsPublic,
+                                CreatinDate = ann.CreatinDate
+                            });
+                    }
+                }
             }
 
             await db.SaveChangesAsync();
@@ -84,8 +127,6 @@ namespace GestionClubs.Infrastructure.SqliteDbContext
         {
             public List<UserSeedData>? Users { get; set; }
             public List<ClubSeedData>? Clubs { get; set; }
-            public List<MemberSeedData>? Members { get; set; }
-            public List<AdhesionSeedData>? Adhesions { get; set; }
         }
 
         private sealed class UserSeedData
@@ -94,6 +135,7 @@ namespace GestionClubs.Infrastructure.SqliteDbContext
             public string Email { get; set; } = string.Empty;
             public string FirstName { get; set; } = string.Empty;
             public string LastName { get; set; } = string.Empty;
+            public DateTime CreatinDate { get; set; }
         }
 
         private sealed class ClubSeedData
@@ -102,24 +144,38 @@ namespace GestionClubs.Infrastructure.SqliteDbContext
             public string Name { get; set; } = string.Empty;
             public string Description { get; set; } = string.Empty;
             public System.Collections.ObjectModel.Collection<string> Documents { get; set; } = [];
+            public DateTime CreatinDate { get; set; }
+            public List<MemberSeedData>? Members { get; set; }
+            public List<AdhesionSeedData>? Adhesions { get; set; }
+            public List<AnnoucementSeedData>? Annoucements { get; set; }
         }
 
         private sealed class MemberSeedData
         {
             public int Id { get; set; }
             public int ClubId { get; set; }
-            [JsonPropertyName("usertId")]
             public int UserId { get; set; }
             public ClubPost PostInClub { get; set; }
+            public DateTime CreatinDate { get; set; }
         }
 
         private sealed class AdhesionSeedData
         {
             public int Id { get; set; }
             public int ClubId { get; set; }
-            [JsonPropertyName("usertId")]
             public int UserId { get; set; }
             public Status Status { get; set; }
+            public DateTime CreatinDate { get; set; }
+        }
+
+        private sealed class AnnoucementSeedData
+        {
+            public int Id { get; set; }
+            public int ClubId { get; set; }
+            public string Title { get; set; } = string.Empty;
+            public string Content { get; set; } = string.Empty;
+            public bool IsPublic { get; set; }
+            public DateTime CreatinDate { get; set; }
         }
     }
 }

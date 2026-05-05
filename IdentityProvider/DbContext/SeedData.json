@@ -1,6 +1,6 @@
 [
   {
-    "email": "admin1@platform.com",
+    "email": "alice.dupont@outlook.com",
     "password": "Admin@123",
     "confirmPassword": "Admin@123",
     "firstName": "Alice",
@@ -8,7 +8,7 @@
     "role": "PlatformAdmin"
   },
   {
-    "email": "admin2@platform.com",
+    "email": "jean.martin@gmail.com",
     "password": "Admin@123",
     "confirmPassword": "Admin@123",
     "firstName": "Jean",
@@ -16,7 +16,7 @@
     "role": "PlatformAdmin"
   },
   {
-    "email": "clubadmin1@club.com",
+    "email": "sophie.bernard@orange.fr",
     "password": "Club@123",
     "confirmPassword": "Club@123",
     "firstName": "Sophie",
@@ -24,7 +24,7 @@
     "role": "ClubAdmin"
   },
   {
-    "email": "clubadmin2@club.com",
+    "email": "lucas.petit@yahoo.com",
     "password": "Club@123",
     "confirmPassword": "Club@123",
     "firstName": "Lucas",
@@ -32,7 +32,7 @@
     "role": "ClubAdmin"
   },
   {
-    "email": "member1@club.com",
+    "email": "emma.robert@gmail.com",
     "password": "Member@123",
     "confirmPassword": "Member@123",
     "firstName": "Emma",
@@ -40,7 +40,7 @@
     "role": "ClubMember"
   },
   {
-    "email": "member2@club.com",
+    "email": "noah.richard@outlook.com",
     "password": "Member@123",
     "confirmPassword": "Member@123",
     "firstName": "Noah",
@@ -48,7 +48,7 @@
     "role": "ClubMember"
   },
   {
-    "email": "member3@club.com",
+    "email": "lina.durand@yahoo.com",
     "password": "Member@123",
     "confirmPassword": "Member@123",
     "firstName": "Lina",
@@ -56,7 +56,7 @@
     "role": "ClubMember"
   },
   {
-    "email": "visitor1@mail.com",
+    "email": "tom.moreau@gmail.com",
     "password": "Visitor@123",
     "confirmPassword": "Visitor@123",
     "firstName": "Tom",
@@ -64,7 +64,7 @@
     "role": "Visitor"
   },
   {
-    "email": "visitor2@mail.com",
+    "email": "sarah.fournier@outlook.com",
     "password": "Visitor@123",
     "confirmPassword": "Visitor@123",
     "firstName": "Sarah",
