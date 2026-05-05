@@ -88,8 +88,8 @@ builder.Services.AddAuthentication(opt =>
         {
             var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
             var claims = context.Principal?.Claims;
-            var userId = claims?.FirstOrDefault(c => c.Type == System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)?.Value;
-            var email = claims?.FirstOrDefault(c => c.Type == System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Email)?.Value;
+            var userId = claims?.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier || c.Type == System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)?.Value;
+            var email = claims?.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Email || c.Type == System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Email)?.Value;
             var roles = claims?.Where(c => c.Type == System.Security.Claims.ClaimTypes.Role).Select(c => c.Value);
 
             logger.LogInformation("JWT token validated successfully for user {UserId} ({Email}) with roles: {Roles}",
