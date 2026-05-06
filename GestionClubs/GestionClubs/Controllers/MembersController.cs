@@ -1,6 +1,7 @@
 ﻿using GestionClubs.API.Validators;
 using GestionClubs.Application.IServices;
 using GestionClubs.Domain.DTOs;
+using GestionClubs.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestionClubs.API.Controllers
@@ -14,24 +15,25 @@ namespace GestionClubs.API.Controllers
             {
                 var result = await membersService.GetMembersByClub(clubId);
                 return Results.Ok(result);
-            });
+            }).RequireAuthorization(AppRoles.ClubAdmin);
 
             members.MapGet("/{id:int}", async ([FromServices] IMembersService membersService, [FromRoute] int id) =>
             {
                 var member = await membersService.GetMemberById(id);
                 return member is not null ? Results.Ok(member) : Results.NotFound();
-            });
+            }).RequireAuthorization(AppRoles.ClubAdmin);
 
             members.MapPut("/post", async ([FromServices] IMembersService membersService, [FromBody] UpdateMemberPostDTO dto) =>
             {
                 var result = await membersService.UpdateMemberPost(dto);
                 return Results.Ok(result);
-            }).AddEndpointFilter<ValidationFilter<UpdateMemberPostDTO>>();
+            }).RequireAuthorization(AppRoles.ClubAdmin)
+                .AddEndpointFilter<ValidationFilter<UpdateMemberPostDTO>>();
             members.MapDelete("/{id:int}", async ([FromServices] IMembersService membersService, [FromRoute] int id) =>
             {
                 var result = await membersService.RemoveMember(id);
                 return result ? Results.Ok() : Results.NotFound();
-            });
+            }).RequireAuthorization(AppRoles.ClubAdmin);
 
         }
     }

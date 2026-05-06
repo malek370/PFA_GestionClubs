@@ -1,6 +1,7 @@
 ﻿using GestionClubs.API.Validators;
 using GestionClubs.Application.IServices;
 using GestionClubs.Domain.DTOs;
+using GestionClubs.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestionClubs.API.Controllers
@@ -20,13 +21,14 @@ namespace GestionClubs.API.Controllers
                 };
                 var result = await clubServices.GetClubs(filter);
                 return Results.Ok(result);
-            });
+            }).RequireAuthorization(AppRoles.Visitor);
 
             clubs.MapPost("/", async ([FromServices] IClubServices clubServices, [FromBody] CreateClubDTO dto) =>
             {
                 await clubServices.CreateClub(dto);
                 return Results.Created();
-            }).AddEndpointFilter<ValidationFilter<CreateClubDTO>>();
+            }).RequireAuthorization(AppRoles.PlatformAdmin)
+                .AddEndpointFilter<ValidationFilter<CreateClubDTO>>();
         }
     }
 }

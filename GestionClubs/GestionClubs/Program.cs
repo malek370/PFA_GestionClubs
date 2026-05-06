@@ -44,7 +44,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = builder.Configuration["IdentityProvider:Audience"],
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            RoleClaimType = "role"
         };
         options.Events = new JwtBearerEvents
         {
@@ -85,8 +84,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddAuthorizationBuilder()
-    .AddPolicy("Admin", policy => policy.RequireRole("Admin"))
-    .AddPolicy("Member", policy => policy.RequireRole("Member"));
+    .AddPolicy(AppRoles.PlatformAdmin, policy => policy.RequireRole(AppRoles.PlatformAdmin))
+    .AddPolicy(AppRoles.ClubAdmin, policy => policy.RequireRole(AppRoles.ClubAdmin)
+                                                    .RequireRole(AppRoles.ClubMember)
+                                                    .RequireRole(AppRoles.Visitor))
+    .AddPolicy(AppRoles.ClubMember, policy => policy.RequireRole(AppRoles.ClubMember)
+                                                    .RequireRole(AppRoles.Visitor))
+    .AddPolicy(AppRoles.Visitor, policy => policy.RequireRole(AppRoles.Visitor));
+
 
 var app = builder.Build();
 
@@ -120,6 +125,7 @@ app.AddMembersEndpoints();
 // --- Adhesions ---
 app.AddAdhesionEndpoints();
 app.MapGet("/testAuth", () => "Hello World!").RequireAuthorization();
+app.MapGet("/testPlatformAdmin", () => "hi admin").RequireAuthorization(AppRoles.PlatformAdmin);
 
 // --- Annoucements ---
 app.AddAnnoucementEndpoints();
