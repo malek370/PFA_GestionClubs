@@ -13,10 +13,11 @@ using System.Threading.Tasks;
 
 namespace GestionClubs.Application.Services
 {
-    public class MembersService(IBaseRepository<Member> _memberRepository) : IMembersService
+    public class MembersService(IBaseRepository<Member> _memberRepository,ICurrentUserService currentUserService) : IMembersService
     {
         public async Task<IEnumerable<GetMemberDTO>> GetMembersByClub(int clubId)
         {
+            await currentUserService.CheckUserIsAdminForClub(clubId);
             var members = await _memberRepository.GetAllQueryable()
                 .Where(member => member.ClubId == clubId)
                 .Select(member => new GetMemberDTO
@@ -36,11 +37,8 @@ namespace GestionClubs.Application.Services
         }
         public async Task<GetMemberDTO?> GetMemberById(int id)
         {
-            var member = await _memberRepository.GetById(id);
-            if (member == null)
-            {
-                throw new EntityNotFoundException($"Member with ID {id} not found.");
-            }
+            var member = await _memberRepository.GetById(id) ?? throw new EntityNotFoundException($"Member with ID {id} not found.");
+            await currentUserService.CheckUserIsAdminForClub(member.ClubId);
             return new GetMemberDTO
             {
                 Id = member.Id,
@@ -56,11 +54,8 @@ namespace GestionClubs.Application.Services
         }
         public async Task<GetMemberDTO> UpdateMemberPost(UpdateMemberPostDTO update)
         {
-            var member = await _memberRepository.GetById(update.MemberId);
-            if (member == null)
-            {
-                throw new EntityNotFoundException($"Member with ID {update.MemberId} not found.");
-            }
+            var member = await _memberRepository.GetById(update.MemberId) ?? throw new EntityNotFoundException($"Member with ID {update.MemberId} not found.");
+            await currentUserService.CheckUserIsAdminForClub(member.ClubId);
             member.PostInClub = update.NewPost;
             var updatedMember = await _memberRepository.Update(member);
             return new GetMemberDTO
@@ -78,11 +73,8 @@ namespace GestionClubs.Application.Services
         }
         public async Task<bool> RemoveMember(int memberId)
         {
-            var member = await _memberRepository.GetById(memberId);
-            if (member == null)
-            {
-                throw new EntityNotFoundException($"Member with ID {memberId} not found.");
-            }
+            var member = await _memberRepository.GetById(memberId) ?? throw new EntityNotFoundException($"Member with ID {memberId} not found.");
+            await currentUserService.CheckUserIsAdminForClub(member.ClubId);
             return await _memberRepository.Delete(memberId);
         }
     }

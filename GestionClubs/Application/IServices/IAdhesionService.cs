@@ -11,5 +11,6 @@ namespace GestionClubs.Application.IServices
         Task<GetAdhesionDTO?> GetAdhesionById(int id);
         Task<IEnumerable<GetAdhesionDTO>> GetAdhesionsByClub(int clubId);
         Task<GetAdhesionDTO?> RefuseAdhesion(int adhesionId);
+        Task<IEnumerable<GetAdhesionDTO>> GetAdhesionsByUser();
     }
 }

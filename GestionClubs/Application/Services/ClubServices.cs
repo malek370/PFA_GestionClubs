@@ -46,7 +46,7 @@ namespace GestionClubs.Application.Services
                 Id = addedClub.Id,
                 Name = addedClub.Name,
                 Description = addedClub.Description,
-                Documents = addedClub.Documents
+                PresidentMail = user.Email,
             };
         }
         public async Task<List<GetClubDTO>> GetClubs(FilterClubDTO filter)
@@ -68,7 +68,7 @@ namespace GestionClubs.Application.Services
                 Id = c.Id,
                 Name = c.Name,
                 Description = c.Description,
-                Documents = c.Documents
+                PresidentMail = c.Members.FirstOrDefault(m => m.PostInClub == ClubPost.President)!.User!.Email
             }).ToListAsync();
         }
     }

@@ -12,12 +12,13 @@ using System.Threading.Tasks;
 
 namespace GestionClubs.Application.Services
 {
-    public class AnnoucementService(IBaseRepository<Annoucement> annoucementRepository, IBaseRepository<Club> clubRepository) : IAnnoucementService
+    public class AnnoucementService(IBaseRepository<Annoucement> annoucementRepository, IBaseRepository<Club> clubRepository, ICurrentUserService currentUserService) : IAnnoucementService
     {
         public async Task<IEnumerable<GetAnnoucementDTO>> GetByClubId(int ClubId)
         {
             return await annoucementRepository.GetAllQueryable()
-                .Where(ann => ann.ClubId == ClubId)
+                .Where(ann => ann.ClubId == ClubId
+                              && (ann.IsPublic || ann.Club!.Members.Any(m => m.User!.Email ==currentUserService.GetEmail() )))
                 .Select(x => new GetAnnoucementDTO
                 {
                     Id = x.Id,
@@ -43,12 +44,14 @@ namespace GestionClubs.Application.Services
         public async Task DeleteAnnoucement(int id)
         {
             var annoucement = await annoucementRepository.GetById(id) ?? throw new EntityNotFoundException($"Annoucement with ID {id} does not exist");
+            await currentUserService.CheckUserIsAdminForClub(annoucement.ClubId);
             await annoucementRepository.Delete(id);
         }
         public async Task<GetAnnoucementDTO> CreateAnnoucement(CreateAnnoucementDTO createAnnoucementDTO)
         {
             var club = await clubRepository.GetById(createAnnoucementDTO.ClubId) 
                 ?? throw new EntityNotFoundException($"Club with ID {createAnnoucementDTO.ClubId} does not exist");
+            await currentUserService.CheckUserIsAdminForClub(club.Id);
             var annoucement = new Annoucement
             {
                 Title = createAnnoucementDTO.Title,
