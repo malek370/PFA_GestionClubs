@@ -126,6 +126,7 @@ app.AddMembersEndpoints();
 app.AddAdhesionEndpoints();
 app.MapGet("/testAuth", () => "Hello World!").RequireAuthorization();
 app.MapGet("/testPlatformAdmin", () => "hi admin").RequireAuthorization(AppRoles.PlatformAdmin);
+app.MapGet("/testClubAdmin", () => "hi Club admin").RequireAuthorization(AppRoles.ClubAdmin);
 
 // --- Annoucements ---
 app.AddAnnoucementEndpoints();
