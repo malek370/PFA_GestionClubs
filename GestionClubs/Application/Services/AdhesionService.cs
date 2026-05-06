@@ -16,13 +16,16 @@ namespace GestionClubs.Application.Services
 {
     public class AdhesionService(IBaseRepository<Adhesion> adhesionRepository, 
         IBaseRepository<Member> memberRepository,
-        IBaseRepository<User> userRepository) : IAdhesionService
+        IBaseRepository<User> userRepository,
+        ICurrentUserService currentUserService) : IAdhesionService
     {
         private readonly IBaseRepository<Adhesion> _adhesionRepository = adhesionRepository;
         private readonly IBaseRepository<Member> _memberRepository = memberRepository;
         private readonly IBaseRepository<User> _userRepository = userRepository;
+        private readonly ICurrentUserService _currentUserService = currentUserService;
         public async Task<IEnumerable<GetAdhesionDTO>> GetAdhesionsByClub(int clubId)
         {
+            await _currentUserService.CheckUserIsAdminForClub(clubId);
             return await _adhesionRepository.GetAllQueryable()
                 .Where(adh => adh.ClubId == clubId)
                 .OrderBy(adh => adh.CreatinDate)
@@ -62,13 +65,12 @@ namespace GestionClubs.Application.Services
         }
         public async Task<GetAdhesionDTO> AddAdhesion(CreateAdhesionDTO adhesionDto)
         {
-            var emailTmp = "alice@example.com"; //TO CHANGE BY TAKING EMAIL FROM TOKEN
-            if (await _adhesionRepository.GetAllQueryable().AnyAsync(a => a.ClubId == adhesionDto.ClubId && a.User!.Email == emailTmp))
+            var userMail = _currentUserService.GetEmail();
+            if (await _adhesionRepository.GetAllQueryable().AnyAsync(a => a.ClubId == adhesionDto.ClubId && a.User!.Email == userMail))
                throw new UserAdhesionExistsException("User has already requested to join this club.");
-            if(await _memberRepository.GetAllQueryable().AnyAsync(m => m.ClubId == adhesionDto.ClubId && m.User!.Email == emailTmp))
+            if(await _memberRepository.GetAllQueryable().AnyAsync(m => m.ClubId == adhesionDto.ClubId && m.User!.Email == userMail))
                 throw new UserAlreadyMemberException("User is already a member of this club.");
-            var user = await _userRepository.GetAllQueryable().FirstOrDefaultAsync(u => u.Email == emailTmp);
-            if (user == null)throw new EntityNotFoundException($"User with email {emailTmp} not found");
+            var user = await _userRepository.GetAllQueryable().FirstOrDefaultAsync(u => u.Email == userMail) ?? throw new EntityNotFoundException($"User with email {userMail} not found");
             var adhesion = new Adhesion
             {
                 ClubId = adhesionDto.ClubId,
@@ -92,6 +94,7 @@ namespace GestionClubs.Application.Services
         public async Task<GetAdhesionDTO?> AcceptAdhesion(int adhesionId)
         {
             var adhesion = await _adhesionRepository.GetById(adhesionId);
+            await _currentUserService.CheckUserIsAdminForClub(adhesion!.ClubId);
             if (adhesion == null)
             {
                 throw new EntityNotFoundException($"Adhesion with id {adhesionId} not found");
@@ -131,6 +134,7 @@ namespace GestionClubs.Application.Services
             {
                 throw new EntityNotFoundException($"Adhesion with id {adhesionId} not found");
             }
+            await _currentUserService.CheckUserIsAdminForClub(adhesion.ClubId);
             adhesion.Status = Status.Refused;
             if(await _memberRepository.GetAllQueryable()
                 .AnyAsync(m => m.ClubId == adhesion.ClubId && m.User!.Email == adhesion.User!.Email))
@@ -160,6 +164,26 @@ namespace GestionClubs.Application.Services
                 throw new EntityNotFoundException($"Adhesion with id {id} not found");
             }
             return await _adhesionRepository.Delete(id);
+        }
+        public async Task<IEnumerable<GetAdhesionDTO>> GetAdhesionsByUser()
+        {
+            var userMail = _currentUserService.GetEmail();
+            return await _adhesionRepository.GetAllQueryable()
+                .Where(adh => adh.User!.Email == userMail)
+                .OrderBy(adh => adh.CreatinDate)
+                .Select(adh => new GetAdhesionDTO
+                {
+                    Id = adh.Id,
+                    Status = adh.Status.ToString(),
+                    ClubName = adh.Club!.Name,
+                    User = new UserDTO
+                    {
+                        FirstName = adh.User!.FirstName,
+                        LastName = adh.User!.LastName,
+                        Email = adh.User!.Email
+                    }
+                })
+                .ToListAsync();
         }
 
     }

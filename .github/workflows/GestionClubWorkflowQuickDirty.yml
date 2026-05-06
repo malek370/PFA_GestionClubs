@@ -91,7 +91,7 @@ jobs:
 
   docker-push:
     name: Dockerize and Push
-    needs: build
+    needs: sonar-analysis
     runs-on: ubuntu-latest
 
     steps:

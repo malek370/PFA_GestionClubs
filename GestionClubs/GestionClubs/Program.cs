@@ -28,6 +28,7 @@ builder.Services.AddScoped<IMembersService, MembersService>();
 builder.Services.AddScoped<IAdhesionService, AdhesionService>();
 builder.Services.AddScoped<IAnnoucementService, AnnoucementService>();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddExceptionHandler<GlobalExcpectionHandler>();
 
 // Authentication & Authorization
@@ -85,12 +86,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy(AppRoles.PlatformAdmin, policy => policy.RequireRole(AppRoles.PlatformAdmin))
-    .AddPolicy(AppRoles.ClubAdmin, policy => policy.RequireRole(AppRoles.ClubAdmin)
-                                                    .RequireRole(AppRoles.ClubMember)
-                                                    .RequireRole(AppRoles.Visitor))
-    .AddPolicy(AppRoles.ClubMember, policy => policy.RequireRole(AppRoles.ClubMember)
-                                                    .RequireRole(AppRoles.Visitor))
-    .AddPolicy(AppRoles.Visitor, policy => policy.RequireRole(AppRoles.Visitor));
+    .AddPolicy(AppRoles.ClubAdmin, policy => policy.RequireRole(AppRoles.ClubAdmin))
+    .AddPolicy(AppRoles.ClubMember, policy => policy.RequireRole([AppRoles.ClubMember, AppRoles.ClubAdmin]))
+    .AddPolicy(AppRoles.Visitor, policy => policy.RequireRole([AppRoles.Visitor, AppRoles.ClubAdmin, AppRoles.ClubMember]));
+                                
 
 
 var app = builder.Build();
@@ -127,6 +126,7 @@ app.AddAdhesionEndpoints();
 app.MapGet("/testAuth", () => "Hello World!").RequireAuthorization();
 app.MapGet("/testPlatformAdmin", () => "hi admin").RequireAuthorization(AppRoles.PlatformAdmin);
 app.MapGet("/testClubAdmin", () => "hi Club admin").RequireAuthorization(AppRoles.ClubAdmin);
+app.MapGet("/testClubMember", () => "hi Club member").RequireAuthorization(AppRoles.ClubMember);
 
 // --- Annoucements ---
 app.AddAnnoucementEndpoints();
