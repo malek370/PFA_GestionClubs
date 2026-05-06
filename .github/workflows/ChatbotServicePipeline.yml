@@ -1,7 +1,0 @@
-name: ChatbotService CI/CD Pipeline
-
-on:
-  push:
-    branches: [ "main" ]
-    paths:
-      - 'ChatbotService/**'

@@ -18,6 +18,7 @@ namespace GestionClubs.Domain.Entities
         
         public Collection<Member> Members { get; set; } = [];
         public Collection<Adhesion> Adhesions { get; set; } = [];
+        public Collection<Annoucement> Annoucements { get; set; } = [];
 
     }
 }

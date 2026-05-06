@@ -7,8 +7,10 @@ using GestionClubs.Domain.DTOs;
 using GestionClubs.Domain.Entities;
 using GestionClubs.Infrastructure.SqliteDbContext;
 using GestionClubs.Infrastructure.SqliteDbContext.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,8 +26,72 @@ builder.Services.AddInfrastructureServices_Sqlite();
 builder.Services.AddScoped<IClubServices, ClubServices>();
 builder.Services.AddScoped<IMembersService, MembersService>();
 builder.Services.AddScoped<IAdhesionService, AdhesionService>();
+builder.Services.AddScoped<IAnnoucementService, AnnoucementService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddExceptionHandler<GlobalExcpectionHandler>();
+
+// Authentication & Authorization
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.Authority = builder.Configuration["IdentityProvider:Authority"];
+        options.RequireHttpsMetadata = false;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = builder.Configuration["IdentityProvider:Issuer"],
+            ValidateAudience = true,
+            ValidAudience = builder.Configuration["IdentityProvider:Audience"],
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+        };
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                context.Response.StatusCode = 401;
+                return Task.CompletedTask;
+            },
+            OnChallenge = context =>
+            {
+                context.HandleResponse();
+                context.Response.StatusCode = 401;
+                return Task.CompletedTask;
+            },
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Response.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+                if (!string.IsNullOrEmpty(accessToken))
+                {
+                    Console.WriteLine($"Access Token received: {accessToken}");
+                    context.Token = accessToken;
+                }
+                return Task.CompletedTask;
+            },
+            OnTokenValidated = context =>
+            {
+                var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+                var claims = context.Principal?.Claims;
+                var email = claims?.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Email)?.Value;
+                var roles = claims?.Where(c => c.Type == System.Security.Claims.ClaimTypes.Role).Select(c => c.Value);
+
+                logger.LogInformation("JWT token validated successfully for {Email} with roles: {Roles}",
+                     email, string.Join(", ", roles ?? Enumerable.Empty<string>()));
+
+                return Task.CompletedTask;
+            }
+        };
+    });
+
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy(AppRoles.PlatformAdmin, policy => policy.RequireRole(AppRoles.PlatformAdmin))
+    .AddPolicy(AppRoles.ClubAdmin, policy => policy.RequireRole(AppRoles.ClubAdmin)
+                                                    .RequireRole(AppRoles.ClubMember)
+                                                    .RequireRole(AppRoles.Visitor))
+    .AddPolicy(AppRoles.ClubMember, policy => policy.RequireRole(AppRoles.ClubMember)
+                                                    .RequireRole(AppRoles.Visitor))
+    .AddPolicy(AppRoles.Visitor, policy => policy.RequireRole(AppRoles.Visitor));
+
 
 var app = builder.Build();
 
@@ -44,6 +110,9 @@ if (app.Environment.IsDevelopment())
 app.UseExceptionHandler(_ => { });
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 #region endpoints
 
 // --- Clubs ---
@@ -55,7 +124,11 @@ app.AddMembersEndpoints();
 
 // --- Adhesions ---
 app.AddAdhesionEndpoints();
+app.MapGet("/testAuth", () => "Hello World!").RequireAuthorization();
+app.MapGet("/testPlatformAdmin", () => "hi admin").RequireAuthorization(AppRoles.PlatformAdmin);
 
+// --- Annoucements ---
+app.AddAnnoucementEndpoints();
 #endregion
 
 

@@ -13,6 +13,7 @@ namespace GestionClubs.Domain.DTOs
         [Required]
         public int MemberId { get; set; }
         [Required]
+        [EnumDataType(typeof(ClubPost))]
         public ClubPost NewPost { get; set; }
     }
 }
