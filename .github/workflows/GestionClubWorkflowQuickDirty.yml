@@ -42,6 +42,7 @@ jobs:
         run: dotnet build -c Release --no-restore
 
   sonar-analysis:
+    needs: build
     name: SonarCloud Analysis
     runs-on: ubuntu-latest
     defaults:
