@@ -2,6 +2,7 @@
 using GestionClubs.Application.IServices;
 using GestionClubs.Domain.DTOs;
 using GestionClubs.Domain.Entities;
+using GestionClubs.Domain.Pagination;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestionClubs.API.Controllers
@@ -12,9 +13,9 @@ namespace GestionClubs.API.Controllers
         {
             var annoucements = app.MapGroup("/api/annoucements").WithTags("Annoucements");
 
-            annoucements.MapGet("/club/{clubId:int}", async ([FromServices] IAnnoucementService annoucementService, [FromRoute] int clubId) =>
+            annoucements.MapGet("/club/{clubId:int}", async ([FromServices] IAnnoucementService annoucementService, [FromRoute] int clubId, [AsParameters] PaginationParams pagination) =>
             {
-                var result = await annoucementService.GetByClubId(clubId);
+                var result = await annoucementService.GetByClubId(clubId, pagination);
                 return Results.Ok(result);
             }).RequireAuthorization(AppRoles.ClubAdmin);
 

@@ -2,6 +2,7 @@
 using GestionClubs.Application.IServices;
 using GestionClubs.Domain.DTOs;
 using GestionClubs.Domain.Entities;
+using GestionClubs.Domain.Pagination;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestionClubs.API.Controllers
@@ -11,9 +12,9 @@ namespace GestionClubs.API.Controllers
         public static void AddMembersEndpoints(this WebApplication app)
         {
             var members = app.MapGroup("/api/members").WithTags("Members");
-            members.MapGet("/club/{clubId:int}", async ([FromServices] IMembersService membersService, [FromRoute] int clubId) =>
+            members.MapGet("/club/{clubId:int}", async ([FromServices] IMembersService membersService, [FromRoute] int clubId, [AsParameters] PaginationParams pagination) =>
             {
-                var result = await membersService.GetMembersByClub(clubId);
+                var result = await membersService.GetMembersByClub(clubId, pagination);
                 return Results.Ok(result);
             }).RequireAuthorization(AppRoles.ClubAdmin);
 

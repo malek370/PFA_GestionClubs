@@ -11,5 +11,6 @@ namespace GestionClubs.Domain.DTOs
         public required string Title { get; set; }
         public required string Content { get; set; }
         public required int ClubId { get; set; }
+        public bool IsPublic { get; set; } = false;
     }
 }

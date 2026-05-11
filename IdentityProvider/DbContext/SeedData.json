@@ -1,82 +1,322 @@
 [
   {
-    "email": "alice.dupont@outlook.com",
-    "password": "Admin@123",
-    "confirmPassword": "Admin@123",
+    "email": "alice.martin@gmail.com",
+    "password": "Alice@1234!",
+    "confirmPassword": "Alice@1234!",
     "firstName": "Alice",
-    "lastName": "Dupont",
-    "role": "PlatformAdmin"
-  },
-  {
-    "email": "jean.martin@gmail.com",
-    "password": "Admin@123",
-    "confirmPassword": "Admin@123",
-    "firstName": "Jean",
     "lastName": "Martin",
-    "role": "PlatformAdmin"
+    "role": "ClubAdmin"
   },
   {
-    "email": "sophie.bernard@orange.fr",
-    "password": "Club@123",
-    "confirmPassword": "Club@123",
-    "firstName": "Sophie",
+    "email": "bob.johnson@gmail.com",
+    "password": "Bob@1234!",
+    "confirmPassword": "Bob@1234!",
+    "firstName": "Bob",
+    "lastName": "Johnson",
+    "role": "ClubAdmin"
+  },
+  {
+    "email": "claire.dupont@yahoo.com",
+    "password": "Claire@1234!",
+    "confirmPassword": "Claire@1234!",
+    "firstName": "Claire",
+    "lastName": "Dupont",
+    "role": "ClubMember"
+  },
+  {
+    "email": "david.smith@outlook.com",
+    "password": "David@1234!",
+    "confirmPassword": "David@1234!",
+    "firstName": "David",
+    "lastName": "Smith",
+    "role": "ClubAdmin"
+  },
+  {
+    "email": "emma.wilson@gmail.com",
+    "password": "Emma@1234!",
+    "confirmPassword": "Emma@1234!",
+    "firstName": "Emma",
+    "lastName": "Wilson",
+    "role": "ClubMember"
+  },
+  {
+    "email": "felix.bernard@gmail.com",
+    "password": "Felix@1234!",
+    "confirmPassword": "Felix@1234!",
+    "firstName": "Felix",
     "lastName": "Bernard",
     "role": "ClubAdmin"
   },
   {
-    "email": "lucas.petit@yahoo.com",
-    "password": "Club@123",
-    "confirmPassword": "Club@123",
-    "firstName": "Lucas",
-    "lastName": "Petit",
+    "email": "grace.lee@hotmail.com",
+    "password": "Grace@1234!",
+    "confirmPassword": "Grace@1234!",
+    "firstName": "Grace",
+    "lastName": "Lee",
     "role": "ClubAdmin"
   },
   {
-    "email": "emma.robert@gmail.com",
-    "password": "Member@123",
-    "confirmPassword": "Member@123",
-    "firstName": "Emma",
-    "lastName": "Robert",
+    "email": "henry.clark@gmail.com",
+    "password": "Henry@1234!",
+    "confirmPassword": "Henry@1234!",
+    "firstName": "Henry",
+    "lastName": "Clark",
     "role": "ClubMember"
   },
   {
-    "email": "noah.richard@outlook.com",
-    "password": "Member@123",
-    "confirmPassword": "Member@123",
+    "email": "isabella.moore@yahoo.com",
+    "password": "Isabella@1234!",
+    "confirmPassword": "Isabella@1234!",
+    "firstName": "Isabella",
+    "lastName": "Moore",
+    "role": "ClubMember"
+  },
+  {
+    "email": "james.taylor@gmail.com",
+    "password": "James@1234!",
+    "confirmPassword": "James@1234!",
+    "firstName": "James",
+    "lastName": "Taylor",
+    "role": "ClubMember"
+  },
+  {
+    "email": "karen.white@outlook.com",
+    "password": "Karen@1234!",
+    "confirmPassword": "Karen@1234!",
+    "firstName": "Karen",
+    "lastName": "White",
+    "role": "ClubAdmin"
+  },
+  {
+    "email": "liam.harris@gmail.com",
+    "password": "Liam@1234!",
+    "confirmPassword": "Liam@1234!",
+    "firstName": "Liam",
+    "lastName": "Harris",
+    "role": "ClubAdmin"
+  },
+  {
+    "email": "mia.thomas@gmail.com",
+    "password": "Mia@1234!",
+    "confirmPassword": "Mia@1234!",
+    "firstName": "Mia",
+    "lastName": "Thomas",
+    "role": "ClubMember"
+  },
+  {
+    "email": "noah.jackson@hotmail.com",
+    "password": "Noah@1234!",
+    "confirmPassword": "Noah@1234!",
     "firstName": "Noah",
-    "lastName": "Richard",
+    "lastName": "Jackson",
     "role": "ClubMember"
   },
   {
-    "email": "lina.durand@yahoo.com",
-    "password": "Member@123",
-    "confirmPassword": "Member@123",
-    "firstName": "Lina",
-    "lastName": "Durand",
+    "email": "olivia.walker@gmail.com",
+    "password": "Olivia@1234!",
+    "confirmPassword": "Olivia@1234!",
+    "firstName": "Olivia",
+    "lastName": "Walker",
+    "role": "ClubAdmin"
+  },
+  {
+    "email": "peter.hall@yahoo.com",
+    "password": "Peter@1234!",
+    "confirmPassword": "Peter@1234!",
+    "firstName": "Peter",
+    "lastName": "Hall",
+    "role": "ClubAdmin"
+  },
+  {
+    "email": "quinn.allen@gmail.com",
+    "password": "Quinn@1234!",
+    "confirmPassword": "Quinn@1234!",
+    "firstName": "Quinn",
+    "lastName": "Allen",
     "role": "ClubMember"
   },
   {
-    "email": "tom.moreau@gmail.com",
-    "password": "Visitor@123",
-    "confirmPassword": "Visitor@123",
-    "firstName": "Tom",
-    "lastName": "Moreau",
+    "email": "rachel.young@outlook.com",
+    "password": "Rachel@1234!",
+    "confirmPassword": "Rachel@1234!",
+    "firstName": "Rachel",
+    "lastName": "Young",
     "role": "Visitor"
   },
   {
-    "email": "sarah.fournier@outlook.com",
-    "password": "Visitor@123",
-    "confirmPassword": "Visitor@123",
-    "firstName": "Sarah",
-    "lastName": "Fournier",
+    "email": "samuel.king@gmail.com",
+    "password": "Samuel@1234!",
+    "confirmPassword": "Samuel@1234!",
+    "firstName": "Samuel",
+    "lastName": "King",
+    "role": "PlatformAdmin"
+  },
+  {
+    "email": "tara.scott@gmail.com",
+    "password": "Tara@1234!",
+    "confirmPassword": "Tara@1234!",
+    "firstName": "Tara",
+    "lastName": "Scott",
+    "role": "ClubAdmin"
+  },
+  {
+    "email": "amara.diallo@gmail.com",
+    "password": "Amara@1234!",
+    "confirmPassword": "Amara@1234!",
+    "firstName": "Amara",
+    "lastName": "Diallo",
+    "role": "ClubAdmin"
+  },
+  {
+    "email": "ben.nguyen@yahoo.com",
+    "password": "Ben@1234!",
+    "confirmPassword": "Ben@1234!",
+    "firstName": "Ben",
+    "lastName": "Nguyen",
+    "role": "ClubAdmin"
+  },
+  {
+    "email": "chloe.lambert@outlook.com",
+    "password": "Chloe@1234!",
+    "confirmPassword": "Chloe@1234!",
+    "firstName": "Chloe",
+    "lastName": "Lambert",
+    "role": "ClubMember"
+  },
+  {
+    "email": "diego.reyes@gmail.com",
+    "password": "Diego@1234!",
+    "confirmPassword": "Diego@1234!",
+    "firstName": "Diego",
+    "lastName": "Reyes",
+    "role": "ClubAdmin"
+  },
+  {
+    "email": "elena.petrov@gmail.com",
+    "password": "Elena@1234!",
+    "confirmPassword": "Elena@1234!",
+    "firstName": "Elena",
+    "lastName": "Petrov",
+    "role": "ClubMember"
+  },
+  {
+    "email": "farid.hassan@hotmail.com",
+    "password": "Farid@1234!",
+    "confirmPassword": "Farid@1234!",
+    "firstName": "Farid",
+    "lastName": "Hassan",
+    "role": "ClubAdmin"
+  },
+  {
+    "email": "gina.romano@gmail.com",
+    "password": "Gina@1234!",
+    "confirmPassword": "Gina@1234!",
+    "firstName": "Gina",
+    "lastName": "Romano",
+    "role": "ClubAdmin"
+  },
+  {
+    "email": "hiro.tanaka@yahoo.com",
+    "password": "Hiro@1234!",
+    "confirmPassword": "Hiro@1234!",
+    "firstName": "Hiro",
+    "lastName": "Tanaka",
+    "role": "ClubMember"
+  },
+  {
+    "email": "ingrid.berg@outlook.com",
+    "password": "Ingrid@1234!",
+    "confirmPassword": "Ingrid@1234!",
+    "firstName": "Ingrid",
+    "lastName": "Berg",
+    "role": "ClubMember"
+  },
+  {
+    "email": "julius.okafor@gmail.com",
+    "password": "Julius@1234!",
+    "confirmPassword": "Julius@1234!",
+    "firstName": "Julius",
+    "lastName": "Okafor",
+    "role": "ClubMember"
+  },
+  {
+    "email": "katya.sorel@gmail.com",
+    "password": "Katya@1234!",
+    "confirmPassword": "Katya@1234!",
+    "firstName": "Katya",
+    "lastName": "Sorel",
+    "role": "ClubAdmin"
+  },
+  {
+    "email": "leon.fischer@outlook.com",
+    "password": "Leon@1234!",
+    "confirmPassword": "Leon@1234!",
+    "firstName": "Leon",
+    "lastName": "Fischer",
+    "role": "ClubAdmin"
+  },
+  {
+    "email": "maya.patel@gmail.com",
+    "password": "Maya@1234!",
+    "confirmPassword": "Maya@1234!",
+    "firstName": "Maya",
+    "lastName": "Patel",
+    "role": "ClubMember"
+  },
+  {
+    "email": "noel.santos@hotmail.com",
+    "password": "Noel@1234!",
+    "confirmPassword": "Noel@1234!",
+    "firstName": "Noel",
+    "lastName": "Santos",
     "role": "Visitor"
   },
   {
-    "email": "chatbot@system.com",
-    "password": "Bot@123",
-    "confirmPassword": "Bot@123",
-    "firstName": "System",
-    "lastName": "Bot",
-    "role": "Chatbot"
+    "email": "ophelia.crane@gmail.com",
+    "password": "Ophelia@1234!",
+    "confirmPassword": "Ophelia@1234!",
+    "firstName": "Ophelia",
+    "lastName": "Crane",
+    "role": "ClubAdmin"
+  },
+  {
+    "email": "pierre.leblanc@yahoo.com",
+    "password": "Pierre@1234!",
+    "confirmPassword": "Pierre@1234!",
+    "firstName": "Pierre",
+    "lastName": "Leblanc",
+    "role": "ClubAdmin"
+  },
+  {
+    "email": "quentin.marsh@gmail.com",
+    "password": "Quentin@1234!",
+    "confirmPassword": "Quentin@1234!",
+    "firstName": "Quentin",
+    "lastName": "Marsh",
+    "role": "ClubMember"
+  },
+  {
+    "email": "rosa.ferreira@outlook.com",
+    "password": "Rosa@1234!",
+    "confirmPassword": "Rosa@1234!",
+    "firstName": "Rosa",
+    "lastName": "Ferreira",
+    "role": "Visitor"
+  },
+  {
+    "email": "stefan.muller@gmail.com",
+    "password": "Stefan@1234!",
+    "confirmPassword": "Stefan@1234!",
+    "firstName": "Stefan",
+    "lastName": "Muller",
+    "role": "ClubMember"
+  },
+  {
+    "email": "yuki.nakamura@gmail.com",
+    "password": "Yuki@1234!",
+    "confirmPassword": "Yuki@1234!",
+    "firstName": "Yuki",
+    "lastName": "Nakamura",
+    "role": "ClubAdmin"
   }
 ]

@@ -23,6 +23,7 @@ namespace GestionClubs.Infrastructure.SqliteDbContext
             services.AddScoped<IBaseRepository<Adhesion>, AdhesionRepository>();
             services.AddScoped<IBaseRepository<User>, UserRepository>();
             services.AddScoped<IBaseRepository<Annoucement>, AnnoucementRepository>();
+            services.AddScoped<IBaseRepository<Event>, EventRepository>();
         }
 
         public static async Task SeedDatabaseAsync(this IServiceProvider serviceProvider)

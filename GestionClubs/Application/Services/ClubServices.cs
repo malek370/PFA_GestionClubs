@@ -6,23 +6,26 @@ using System.Text;
 using System.Threading.Tasks;
 using GestionClubs.Application.BaseExceptions;
 using GestionClubs.Application.Exceptions;
+using GestionClubs.Application.Extensions;
 using GestionClubs.Application.IRepositories;
 using GestionClubs.Application.IServices;
 using GestionClubs.Domain.DTOs;
 using GestionClubs.Domain.Entities;
 using GestionClubs.Domain.Enums;
+using GestionClubs.Domain.Pagination;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace GestionClubs.Application.Services
 {
     public class ClubServices(IBaseRepository<Club> clubRepository,
-        IBaseRepository<User> userRepository) : IClubServices
+        IBaseRepository<User> userRepository,
+        ICurrentUserService currentUserService) : IClubServices
     {
         public async Task<GetClubDTO> CreateClub(CreateClubDTO createClubDTO)
         {
 
-            if(await clubRepository.GetAllQueryable().AnyAsync(c => c.Name.ToUpper() == createClubDTO.Name.ToUpper()))
+            if (await clubRepository.GetAllQueryable().AnyAsync(c => c.Name.ToUpper() == createClubDTO.Name.ToUpper()))
             {
                 throw new ClubExistsException("Club with the same name already exists");
             }
@@ -49,7 +52,7 @@ namespace GestionClubs.Application.Services
                 PresidentMail = user.Email,
             };
         }
-        public async Task<List<GetClubDTO>> GetClubs(FilterClubDTO filter)
+        public async Task<PagedResult<GetClubDTO>> GetClubs(FilterClubDTO filter, PaginationParams pagination)
         {
             var clubs = clubRepository.GetAllQueryable();
 
@@ -63,13 +66,28 @@ namespace GestionClubs.Application.Services
                 clubs = clubs.Where(c => c.Description.ToUpper().Contains(filter.Description.ToUpper()));
             }
 
-            return await clubs.Select(c => new GetClubDTO
+            return await clubs.OrderBy(c => c.Id).Select(c => new GetClubDTO
             {
                 Id = c.Id,
                 Name = c.Name,
                 Description = c.Description,
                 PresidentMail = c.Members.FirstOrDefault(m => m.PostInClub == ClubPost.President)!.User!.Email
-            }).ToListAsync();
+            }).ToPagedResultAsync(pagination);
+        }
+        public async Task<PagedResult<GetUserClub>> GetUserClubs(PaginationParams pagination)
+        {
+            var userEmail = currentUserService.GetEmail() ?? throw new UnauthorizedAccessException("User is not authenticated");
+            return await clubRepository.GetAllQueryable()
+                .Where(c => c.Members.Any(m => m.User!.Email == userEmail))
+                .OrderBy(c => c.Id)
+                .Select(c => new GetUserClub
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    Description = c.Description,
+                    PresidentMail = c.Members.FirstOrDefault(m => m.PostInClub == ClubPost.President)!.User!.Email,
+                    UserPost = c.Members.FirstOrDefault(m => m.User!.Email == userEmail)!.PostInClub.ToString()
+                }).ToPagedResultAsync(pagination);
         }
     }
 }

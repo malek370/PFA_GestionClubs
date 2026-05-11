@@ -29,6 +29,7 @@ builder.Services.AddScoped<IAdhesionService, AdhesionService>();
 builder.Services.AddScoped<IAnnoucementService, AnnoucementService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddExceptionHandler<GlobalExcpectionHandler>();
 
 // Authentication & Authorization
@@ -61,7 +62,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             },
             OnMessageReceived = context =>
             {
-                var accessToken = context.Response.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+                var accessToken = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
                 if (!string.IsNullOrEmpty(accessToken))
                 {
                     Console.WriteLine($"Access Token received: {accessToken}");
@@ -123,6 +124,8 @@ app.AddMembersEndpoints();
 
 // --- Adhesions ---
 app.AddAdhesionEndpoints();
+
+//---tests ---
 app.MapGet("/testAuth", () => "Hello World!").RequireAuthorization();
 app.MapGet("/testPlatformAdmin", () => "hi admin").RequireAuthorization(AppRoles.PlatformAdmin);
 app.MapGet("/testClubAdmin", () => "hi Club admin").RequireAuthorization(AppRoles.ClubAdmin);
@@ -130,6 +133,11 @@ app.MapGet("/testClubMember", () => "hi Club member").RequireAuthorization(AppRo
 
 // --- Annoucements ---
 app.AddAnnoucementEndpoints();
+
+
+// --- Events ---
+app.AddEventEndpoints();
+
 #endregion
 
 

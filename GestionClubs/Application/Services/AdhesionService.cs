@@ -1,10 +1,12 @@
 ﻿using GestionClubs.Application.BaseExceptions;
 using GestionClubs.Application.Exceptions;
+using GestionClubs.Application.Extensions;
 using GestionClubs.Application.IRepositories;
 using GestionClubs.Application.IServices;
 using GestionClubs.Domain.DTOs;
 using GestionClubs.Domain.Entities;
 using GestionClubs.Domain.Enums;
+using GestionClubs.Domain.Pagination;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -23,7 +25,7 @@ namespace GestionClubs.Application.Services
         private readonly IBaseRepository<Member> _memberRepository = memberRepository;
         private readonly IBaseRepository<User> _userRepository = userRepository;
         private readonly ICurrentUserService _currentUserService = currentUserService;
-        public async Task<IEnumerable<GetAdhesionDTO>> GetAdhesionsByClub(int clubId)
+        public async Task<PagedResult<GetAdhesionDTO>> GetAdhesionsByClub(int clubId, PaginationParams pagination)
         {
             await _currentUserService.CheckUserIsAdminForClub(clubId);
             return await _adhesionRepository.GetAllQueryable()
@@ -41,7 +43,7 @@ namespace GestionClubs.Application.Services
                     Status = adh.Status.ToString(),
                     ClubName = adh.Club!.Name,
                 })
-                .ToListAsync();
+                .ToPagedResultAsync(pagination);
         }
         public async Task<GetAdhesionDTO?> GetAdhesionById(int id)
         {
@@ -165,7 +167,7 @@ namespace GestionClubs.Application.Services
             }
             return await _adhesionRepository.Delete(id);
         }
-        public async Task<IEnumerable<GetAdhesionDTO>> GetAdhesionsByUser()
+        public async Task<PagedResult<GetAdhesionDTO>> GetAdhesionsByUser(PaginationParams pagination)
         {
             var userMail = _currentUserService.GetEmail();
             return await _adhesionRepository.GetAllQueryable()
@@ -183,7 +185,7 @@ namespace GestionClubs.Application.Services
                         Email = adh.User!.Email
                     }
                 })
-                .ToListAsync();
+                .ToPagedResultAsync(pagination);
         }
 
     }

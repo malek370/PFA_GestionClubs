@@ -16,5 +16,6 @@ namespace GestionClubs.Domain.Entities
         public required string FirstName { get; set; }
         [Required]
         public required string LastName { get; set; }
+        public List<Event> Events { get; set; } = [];
     }
 }
