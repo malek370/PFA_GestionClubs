@@ -8,8 +8,8 @@ namespace GestionClubs.Domain.Enums
 {
     public enum Status
     {
+        Pending,
         Accepted,
-        Refused,
-        Pending
+        Refused
     }
 }

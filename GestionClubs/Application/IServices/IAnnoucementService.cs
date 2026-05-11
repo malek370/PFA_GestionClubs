@@ -1,4 +1,5 @@
 ﻿using GestionClubs.Domain.DTOs;
+using GestionClubs.Domain.Pagination;
 
 namespace GestionClubs.Application.IServices
 {
@@ -7,6 +8,6 @@ namespace GestionClubs.Application.IServices
         Task<GetAnnoucementDTO> CreateAnnoucement(CreateAnnoucementDTO createAnnoucementDTO);
         Task DeleteAnnoucement(int id);
         Task<GetAnnoucementDTO> GetAnnoucementById(int id);
-        Task<IEnumerable<GetAnnoucementDTO>> GetByClubId(int ClubId);
+        Task<PagedResult<GetAnnoucementDTO>> GetByClubId(int ClubId, PaginationParams pagination);
     }
 }

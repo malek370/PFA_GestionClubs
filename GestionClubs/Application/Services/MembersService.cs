@@ -1,9 +1,11 @@
 ﻿using GestionClubs.Application.BaseExceptions;
 using GestionClubs.Application.Exceptions;
+using GestionClubs.Application.Extensions;
 using GestionClubs.Application.IRepositories;
 using GestionClubs.Application.IServices;
 using GestionClubs.Domain.DTOs;
 using GestionClubs.Domain.Entities;
+using GestionClubs.Domain.Pagination;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -15,11 +17,12 @@ namespace GestionClubs.Application.Services
 {
     public class MembersService(IBaseRepository<Member> _memberRepository,ICurrentUserService currentUserService) : IMembersService
     {
-        public async Task<IEnumerable<GetMemberDTO>> GetMembersByClub(int clubId)
+        public async Task<PagedResult<GetMemberDTO>> GetMembersByClub(int clubId, PaginationParams pagination)
         {
             await currentUserService.CheckUserIsAdminForClub(clubId);
-            var members = await _memberRepository.GetAllQueryable()
+            return await _memberRepository.GetAllQueryable()
                 .Where(member => member.ClubId == clubId)
+                .OrderBy(member => member.Id)
                 .Select(member => new GetMemberDTO
                 {
                     Id = member.Id,
@@ -32,8 +35,7 @@ namespace GestionClubs.Application.Services
                     },
                     PostInClub = member.PostInClub.ToString()
                 })
-                .ToListAsync();
-            return members;
+                .ToPagedResultAsync(pagination);
         }
         public async Task<GetMemberDTO?> GetMemberById(int id)
         {

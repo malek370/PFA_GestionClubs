@@ -25,10 +25,11 @@ namespace GestionClubs.API.Handlers
             {
                 return exception switch
                 {
-                    AppUnauthorizedException => (HttpStatusCode.Unauthorized, exception.Message),
+                    AppUnauthorizedException => (HttpStatusCode.Forbidden, exception.Message),
                     AppConflictException => (HttpStatusCode.Conflict, exception.Message),
                     BadHttpRequestException => (HttpStatusCode.BadRequest, exception.Message),
                     EntityNotFoundException => (HttpStatusCode.NotFound, exception.Message),
+                    InvalidOperationException => (HttpStatusCode.BadRequest, exception.Message),
                     _ => (HttpStatusCode.InternalServerError, $"Unexpected error : {exception.Message}")
 
                 };

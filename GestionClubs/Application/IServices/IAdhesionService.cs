@@ -1,5 +1,6 @@
 ﻿using GestionClubs.Domain.DTOs;
 using GestionClubs.Domain.Entities;
+using GestionClubs.Domain.Pagination;
 
 namespace GestionClubs.Application.IServices
 {
@@ -9,8 +10,8 @@ namespace GestionClubs.Application.IServices
         Task<GetAdhesionDTO> AddAdhesion(CreateAdhesionDTO adhesionDto);
         Task<bool> DeleteAdhesion(int id);
         Task<GetAdhesionDTO?> GetAdhesionById(int id);
-        Task<IEnumerable<GetAdhesionDTO>> GetAdhesionsByClub(int clubId);
+        Task<PagedResult<GetAdhesionDTO>> GetAdhesionsByClub(int clubId, PaginationParams pagination);
         Task<GetAdhesionDTO?> RefuseAdhesion(int adhesionId);
-        Task<IEnumerable<GetAdhesionDTO>> GetAdhesionsByUser();
+        Task<PagedResult<GetAdhesionDTO>> GetAdhesionsByUser(PaginationParams pagination);
     }
 }

@@ -1,8 +1,10 @@
 ﻿using GestionClubs.Application.BaseExceptions;
+using GestionClubs.Application.Extensions;
 using GestionClubs.Application.IRepositories;
 using GestionClubs.Application.IServices;
 using GestionClubs.Domain.DTOs;
 using GestionClubs.Domain.Entities;
+using GestionClubs.Domain.Pagination;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -14,11 +16,12 @@ namespace GestionClubs.Application.Services
 {
     public class AnnoucementService(IBaseRepository<Annoucement> annoucementRepository, IBaseRepository<Club> clubRepository, ICurrentUserService currentUserService) : IAnnoucementService
     {
-        public async Task<IEnumerable<GetAnnoucementDTO>> GetByClubId(int ClubId)
+        public async Task<PagedResult<GetAnnoucementDTO>> GetByClubId(int ClubId, PaginationParams pagination)
         {
             return await annoucementRepository.GetAllQueryable()
                 .Where(ann => ann.ClubId == ClubId
                               && (ann.IsPublic || ann.Club!.Members.Any(m => m.User!.Email ==currentUserService.GetEmail() )))
+                .OrderBy(ann => ann.Id)
                 .Select(x => new GetAnnoucementDTO
                 {
                     Id = x.Id,
@@ -26,12 +29,13 @@ namespace GestionClubs.Application.Services
                     Title = x.Title,
                     Content = x.Content
                 })
-                .ToListAsync();
+                .ToPagedResultAsync(pagination);
         }
         public async Task<GetAnnoucementDTO> GetAnnoucementById(int id)
         {
-            var annoucement = await annoucementRepository.GetById(id);
-            if (annoucement == null) throw new EntityNotFoundException($"Annoucement with ID {id} does not exist");
+            var annoucement = await annoucementRepository.GetAllQueryable()
+                .Where(ann => ann.Id == id && (ann.IsPublic || ann.Club!.Members.Any(m => m.User!.Email == currentUserService.GetEmail())))
+                .FirstOrDefaultAsync() ?? throw new EntityNotFoundException($"Annoucement with ID {id} does not exist");
             return new GetAnnoucementDTO
             {
                 Id = annoucement.Id,
@@ -56,7 +60,8 @@ namespace GestionClubs.Application.Services
             {
                 Title = createAnnoucementDTO.Title,
                 Content = createAnnoucementDTO.Content,
-                ClubId = createAnnoucementDTO.ClubId
+                ClubId = createAnnoucementDTO.ClubId,
+                IsPublic = createAnnoucementDTO.IsPublic
             };
             var addedAnnoucement = await annoucementRepository.Add(annoucement);
             return new GetAnnoucementDTO

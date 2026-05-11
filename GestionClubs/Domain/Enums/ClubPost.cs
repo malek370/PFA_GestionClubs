@@ -8,11 +8,12 @@ namespace GestionClubs.Domain.Enums
 {
     public enum ClubPost
     {
+        Member,
+        HeadOfDepartment,
         President,
-        VicePresident,
         Secretary,
         Treasurer,
-        HeadOfDepartment,
-        Member
+        VicePresident
+
     }
 }

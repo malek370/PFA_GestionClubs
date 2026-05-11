@@ -2,6 +2,7 @@
 using GestionClubs.Application.IServices;
 using GestionClubs.Domain.DTOs;
 using GestionClubs.Domain.Entities;
+using GestionClubs.Domain.Pagination;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GestionClubs.API.Controllers
@@ -12,9 +13,9 @@ namespace GestionClubs.API.Controllers
         {
             var adhesions = app.MapGroup("/api/adhesions").WithTags("Adhesions");
 
-            adhesions.MapGet("/club/{clubId:int}", async ([FromServices] IAdhesionService adhesionService, [FromRoute] int clubId) =>
+            adhesions.MapGet("/club/{clubId:int}", async ([FromServices] IAdhesionService adhesionService, [FromRoute] int clubId, [AsParameters] PaginationParams pagination) =>
             {
-                var result = await adhesionService.GetAdhesionsByClub(clubId);
+                var result = await adhesionService.GetAdhesionsByClub(clubId, pagination);
                 return Results.Ok(result);
             }).RequireAuthorization(AppRoles.ClubAdmin);
 
@@ -61,9 +62,9 @@ namespace GestionClubs.API.Controllers
 
 
 
-            adhesions.MapGet("/myadhesions", async ([FromServices] IAdhesionService adhesionService) =>
+            adhesions.MapGet("/myadhesions", async ([FromServices] IAdhesionService adhesionService, [AsParameters] PaginationParams pagination) =>
             {
-                var result = await adhesionService.GetAdhesionsByUser();
+                var result = await adhesionService.GetAdhesionsByUser(pagination);
                 return Results.Ok(result);
             }).RequireAuthorization(AppRoles.Visitor);
         }

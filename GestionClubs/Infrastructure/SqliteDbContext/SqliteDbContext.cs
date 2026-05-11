@@ -20,6 +20,7 @@ namespace GestionClubs.Infrastructure.SqliteDbContext
         public DbSet<Member> Members { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Annoucement> Annoucements { get; set; }
+        public DbSet<Event> Events { get; set; }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
