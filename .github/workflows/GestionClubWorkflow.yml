@@ -1,4 +1,4 @@
-name: GestionClubs CI/CD Pipeline Quick and Dirty
+name: GestionClubs CI/CD Pipeline
 
 on:
   push:
@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   build:
-    name: Build 
+    name: Build
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -41,9 +41,40 @@ jobs:
       - name: Build
         run: dotnet build -c Release --no-restore
 
-  sonar-analysis:
+  test:
+    name: Test
     needs: build
-    name: SonarCloud Analysis
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: GestionClubs
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Cache NuGet Packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('GestionClubs/**/*.csproj') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
+
+      - name: Restore Dependencies
+        run: dotnet restore
+
+      - name: Run Tests
+        run: dotnet test -c Release --no-restore --verbosity normal
+
+  sonar-analysis:
+    name: Test, Coverage & SonarCloud Quality Gate
+    needs: test
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -74,21 +105,45 @@ jobs:
           restore-keys: |
             nuget-${{ runner.os }}-
 
+      - name: Cache SonarCloud Scanner
+        id: cache-sonar-scanner
+        uses: actions/cache@v4
+        with:
+          path: ~/.dotnet/tools
+          key: sonar-scanner-${{ runner.os }}
+
       - name: Install SonarCloud Scanner
+        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
         run: dotnet tool install --global dotnet-sonarscanner
 
       - name: Restore Dependencies
         run: dotnet restore
 
-      - name: Run SonarCloud Analysis
+      - name: Begin SonarCloud Analysis
         env:
           GITHUB_TOKEN: ${{ secrets.IDENTITYPROVIDER_GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_IdentityProvider_TOKEN }}
         run: |
-          dotnet-sonarscanner begin /k:"malek370_PFA_GestionClubs_Metier" /o:"malek370" /d:sonar.token="${{ secrets.SONAR_IdentityProvider_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
-          dotnet build --no-restore
-          dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_IdentityProvider_TOKEN }}"
+          dotnet-sonarscanner begin \
+            /k:"malek370_PFA_GestionClubs_Metier" \
+            /o:"malek370" \
+            /d:sonar.token="${{ secrets.SONAR_IdentityProvider_TOKEN }}" \
+            /d:sonar.host.url="https://sonarcloud.io" \
+            /d:sonar.qualitygate.wait=true \
+            /d:sonar.cs.opencover.reportsPaths="**/coverage/**/coverage.opencover.xml" \
+            /d:sonar.coverage.exclusions="**/*Test*.cs,**/*Tests*.cs,**/Migrations/**,**/Program.cs,**/Infrastructure/**"
 
+      - name: Build for Analysis
+        run: dotnet build --no-restore
+
+      - name: Run Tests with Coverage (OpenCover)
+        run: dotnet test --no-build --results-directory ./coverage --collect:"XPlat Code Coverage;Format=opencover"
+
+      - name: End SonarCloud Analysis (Quality Gate Check)
+        env:
+          GITHUB_TOKEN: ${{ secrets.IDENTITYPROVIDER_GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_IdentityProvider_TOKEN }}
+        run: dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_IdentityProvider_TOKEN }}"
 
   docker-push:
     name: Dockerize and Push
