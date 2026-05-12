@@ -21,11 +21,4 @@
     <ProjectReference Include="..\Domain\GestionClubs.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="SqliteDbContext\data.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Link>data.json</Link>
-    </Content>
-  </ItemGroup>
-
 </Project>
