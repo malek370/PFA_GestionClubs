@@ -20,7 +20,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-//add database with SQL Server
+//add database service with SQL Server
 builder.Services.AddInfrastructureServices_SqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 
 // Register application services
