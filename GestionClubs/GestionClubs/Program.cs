@@ -7,6 +7,7 @@ using GestionClubs.Domain.DTOs;
 using GestionClubs.Domain.Entities;
 using GestionClubs.Infrastructure.SqliteDbContext;
 using GestionClubs.Infrastructure.SqliteDbContext.Repositories;
+using GestionClubs.Infrastructure.SqlServerDbContext;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,8 +20,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-//add database with SQLITE
-builder.Services.AddInfrastructureServices_Sqlite();
+//add database with SQL Server
+builder.Services.AddInfrastructureServices_SqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 
 // Register application services
 builder.Services.AddScoped<IClubServices, ClubServices>();
@@ -96,7 +97,7 @@ builder.Services.AddAuthorizationBuilder()
 var app = builder.Build();
 
 // Seed the database
-await app.Services.SeedDatabaseAsync();
+//await app.Services.SeedDatabaseAsync();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -144,5 +145,7 @@ app.AddEventEndpoints();
 
 
 app.Run();
+
+public partial class Program { }
 
 

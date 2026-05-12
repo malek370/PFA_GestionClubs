@@ -2,8 +2,11 @@
   <Folder Name="/Éléments de solution/">
     <File Path=".gitignore" />
   </Folder>
+  <Project Path="Application.Test/Application.Test.csproj" Id="b930f18b-51b3-405f-8253-7694a243ef68" />
   <Project Path="Application/GestionClubs.Application.csproj" />
+  <Project Path="Domain.Test/Domain.Test.csproj" Id="9e78da97-cc50-477c-a63d-7e79e8d91620" />
   <Project Path="Domain/GestionClubs.Domain.csproj" />
   <Project Path="GestionClubs/GestionClubs.API.csproj" />
   <Project Path="Infrastructure/GestionClubs.Infrastructure.csproj" />
+  <Project Path="Integration.Test/Integration.Test.csproj" Id="2b439e90-856d-48a5-9d7c-4c863bb162fc" />
 </Solution>
