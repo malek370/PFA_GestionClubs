@@ -11,9 +11,9 @@ namespace GestionClubs.Domain.DTOs
     public class UpdateMemberPostDTO
     {
         [Required]
-        public int MemberId { get; set; }
+        public required int MemberId { get; set; }
         [Required]
         [EnumDataType(typeof(ClubPost))]
-        public ClubPost NewPost { get; set; }
+        public required ClubPost NewPost { get; set; }
     }
 }

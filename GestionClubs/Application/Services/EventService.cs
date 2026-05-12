@@ -167,7 +167,6 @@ namespace GestionClubs.Application.Services
         }
         public async Task<PagedResult<GetEventDTO>> GetClubEvents(int clubId, PaginationParams pagination)
         {
-            await _currentUserService.CheckUserIsAdminForClub(clubId);
             return await _eventRepository.GetAllQueryable()
                 .Where(e => e.ClubId == clubId &&
                 (e.IsPublic || e.Club!.Members.Any(m => m.User!.Email == _currentUserService.GetEmail())))

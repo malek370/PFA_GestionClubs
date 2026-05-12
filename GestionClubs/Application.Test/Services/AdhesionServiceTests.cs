@@ -110,7 +110,7 @@ public class AdhesionServiceTests
     {
         _adhesionRepositoryMock.Setup(x => x.GetById(It.IsAny<int>())).ReturnsAsync((Adhesion)null);
 
-        var exception = await Assert.ThrowsAsync<NullReferenceException>(() => _service.AcceptAdhesion(1));
+        var exception = await Assert.ThrowsAsync<EntityNotFoundException>(() => _service.AcceptAdhesion(1));
     }
 
     [Fact]

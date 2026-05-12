@@ -95,12 +95,9 @@ namespace GestionClubs.Application.Services
         }
         public async Task<GetAdhesionDTO?> AcceptAdhesion(int adhesionId)
         {
-            var adhesion = await _adhesionRepository.GetById(adhesionId);
+            var adhesion = await _adhesionRepository.GetById(adhesionId) ?? throw new EntityNotFoundException($"Adhesion with id {adhesionId} not found");
             await _currentUserService.CheckUserIsAdminForClub(adhesion!.ClubId);
-            if (adhesion == null)
-            {
-                throw new EntityNotFoundException($"Adhesion with id {adhesionId} not found");
-            }
+            
             if( await _memberRepository.GetAllQueryable()
                 .AnyAsync(m => m.ClubId == adhesion.ClubId && m.User!.Email == adhesion.User!.Email))
             {
@@ -131,11 +128,7 @@ namespace GestionClubs.Application.Services
         }
         public async Task<GetAdhesionDTO?> RefuseAdhesion(int adhesionId)
         {
-            var adhesion = await _adhesionRepository.GetById(adhesionId);
-            if (adhesion == null)
-            {
-                throw new EntityNotFoundException($"Adhesion with id {adhesionId} not found");
-            }
+            var adhesion = await _adhesionRepository.GetById(adhesionId) ?? throw new EntityNotFoundException($"Adhesion with id {adhesionId} not found");
             await _currentUserService.CheckUserIsAdminForClub(adhesion.ClubId);
             adhesion.Status = Status.Refused;
             if(await _memberRepository.GetAllQueryable()

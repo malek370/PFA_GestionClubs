@@ -97,7 +97,7 @@ builder.Services.AddAuthorizationBuilder()
 var app = builder.Build();
 
 // Seed the database
-await app.Services.SeedDatabaseAsync();
+//await app.Services.SeedDatabaseAsync();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -145,5 +145,7 @@ app.AddEventEndpoints();
 
 
 app.Run();
+
+public partial class Program { }
 
 
