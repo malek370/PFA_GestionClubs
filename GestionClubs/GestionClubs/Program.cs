@@ -1,15 +1,10 @@
 using GestionClubs.API.Controllers;
 using GestionClubs.API.Handlers;
-using GestionClubs.Application.IRepositories;
 using GestionClubs.Application.IServices;
 using GestionClubs.Application.Services;
-using GestionClubs.Domain.DTOs;
 using GestionClubs.Domain.Entities;
-using GestionClubs.Infrastructure.SqliteDbContext;
-using GestionClubs.Infrastructure.SqliteDbContext.Repositories;
 using GestionClubs.Infrastructure.SqlServerDbContext;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
