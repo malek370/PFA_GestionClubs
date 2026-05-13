@@ -62,6 +62,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 if (!string.IsNullOrEmpty(accessToken))
                 {
                     Console.WriteLine($"Access Token received: {accessToken}");
+                    Console.WriteLine("Authority: " + context.Options.Authority);
+                    Console.WriteLine("Audience: " + context.Options.Audience);
+                    Console.WriteLine("Issuer: " + context.Options.TokenValidationParameters.ValidIssuer);
                     context.Token = accessToken;
                 }
                 return Task.CompletedTask;
