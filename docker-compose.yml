@@ -54,9 +54,7 @@
       - ./certs:/https:ro # monte le certificat dans le container
 
   gestionclubs:
-    build:
-      context: ./GestionClubs
-      dockerfile: GestionClubs/Dockerfile
+    image: mbokri/gestionclubs:latest
     ports:
       - "8081:8081"   # HTTPS
       - "8082:8080"   # HTTP
