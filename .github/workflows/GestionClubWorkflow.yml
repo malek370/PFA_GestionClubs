@@ -132,6 +132,7 @@ jobs:
             /d:sonar.qualitygate.wait=true \
             /d:sonar.cs.opencover.reportsPaths="**/coverage/**/coverage.opencover.xml" \
             /d:sonar.coverage.exclusions="**/*Test*.cs,**/*Tests*.cs,**/Migrations/**,**/Program.cs,**/Infrastructure/**"
+            /d:sonar.cpd.exclusions="**/Migrations/**"
 
       - name: Build for Analysis
         run: dotnet build --no-restore
