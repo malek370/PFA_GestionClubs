@@ -28,7 +28,6 @@ COPY Processors/ ./Processors/
 COPY Services/ ./Services/
 COPY appsettings.json ./
 COPY Program.cs ./
-COPY entrypoint.sh ./
 COPY Validators/ ./Validators/
 COPY Migrations/ ./Migrations/
 COPY Responses/ ./Responses/
@@ -44,11 +43,10 @@ RUN dotnet publish "./IdentityProvider.csproj" -c $BUILD_CONFIGURATION -o /app/p
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-COPY entrypoint.sh .
 USER root
-RUN chmod +x entrypoint.sh && apt-get update && apt-get install -y --no-install-recommends openssl && rm -rf /var/lib/apt/lists/* && mkdir -p /app/keys && chown -R $APP_UID /app/keys
+RUN apt-get update && apt-get install -y --no-install-recommends openssl && rm -rf /var/lib/apt/lists/* && mkdir -p /app/keys && chown -R $APP_UID /app/keys
 USER $APP_UID
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["sh", "-c", "if [ ! -f /app/keys/private_key.pem ]; then openssl genrsa -out /app/keys/private_key.pem 2048 && openssl rsa -in /app/keys/private_key.pem -pubout -outform PEM | openssl rsa -pubin -RSAPublicKey_out -out /app/keys/public_key.pem; fi && ln -sf /app/keys/private_key.pem /app/private_key.pem && ln -sf /app/keys/public_key.pem /app/public_key.pem && exec dotnet IdentityProvider.dll"]
 
 
 # Commandes pour construire et exécuter le conteneur

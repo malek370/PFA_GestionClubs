@@ -1,5 +1,5 @@
 ﻿services:
-  sqlserver:
+  sqlserver-idp:
     image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
       SA_PASSWORD: "YourStr0ngP@ssword!"
@@ -7,7 +7,30 @@
     ports:
       - "1433:1433"
     volumes:
-      - sqldata:/var/opt/mssql
+      - sqldata-idp:/var/opt/mssql
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "YourStr0ngP@ssword!" -Q "SELECT 1" -C -b
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  sqlserver-clubs:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      SA_PASSWORD: "YourStr0ngP@ssword!"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1434:1433"
+    volumes:
+      - sqldata-clubs:/var/opt/mssql
+      - ./seedGestionClub.sql:/docker-entrypoint-initdb.d/seedGestionClub.sql:ro
+      - ./init-clubs-db.sh:/init-clubs-db.sh:ro
+    entrypoint: /bin/bash /init-clubs-db.sh
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "YourStr0ngP@ssword!" -Q "SELECT 1" -C -b
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   identityprovider:
     image: mbokri/identityprovider:latest
@@ -15,9 +38,10 @@
       - "8080:8080"   # HTTP (optionnel, tu peux l'enlever)
       - "8443:8443"   # HTTPS
     depends_on:
-      - sqlserver
+      sqlserver-idp:
+        condition: service_healthy
     environment:
-      ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=IdentityProvider;User Id=sa;Password=YourStr0ngP@ssword!;TrustServerCertificate=True;"
+      ConnectionStrings__DefaultConnection: "Server=sqlserver-idp;Database=IdentityProvider;User Id=sa;Password=YourStr0ngP@ssword!;TrustServerCertificate=True;"
       JwtOptions__Secret: "votre-secret-de-production-suffisamment-long"
       JwtOptions__Issuer: "myapp"
       JwtOptions__Audience: "myappusers"
@@ -37,10 +61,12 @@
       - "8081:8081"   # HTTPS
       - "8082:8080"   # HTTP
     depends_on:
-      - sqlserver
-      - identityprovider
+      sqlserver-clubs:
+        condition: service_healthy
+      identityprovider:
+        condition: service_started
     environment:
-      ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=GestionClubs;User Id=sa;Password=YourStr0ngP@ssword!;TrustServerCertificate=True;"
+      ConnectionStrings__DefaultConnection: "Server=sqlserver-clubs;Database=GestionClubs;User Id=sa;Password=YourStr0ngP@ssword!;TrustServerCertificate=True;"
       IdentityProvider__Authority: "https://identityprovider:8443"
       IdentityProvider__Issuer: "myapp"
       IdentityProvider__Audience: "myappusers"
@@ -52,5 +78,6 @@
       - ./certs:/https:ro
 
 volumes:
-  sqldata:
+  sqldata-idp:
+  sqldata-clubs:
   keys:

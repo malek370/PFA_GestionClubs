@@ -318,5 +318,13 @@
     "firstName": "Yuki",
     "lastName": "Nakamura",
     "role": "ClubAdmin"
+  },
+  {
+    "email": "chat.bot@gmail.com",
+    "password": "chatBot@1234!",
+    "confirmPassword": "chatBot@1234!",
+    "firstName": "Chat",
+    "lastName": "Bot",
+    "role": "Chatbot"
   }
 ]
