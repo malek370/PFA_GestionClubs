@@ -29,6 +29,28 @@
       - keys:/app/keys
       - ./certs:/https:ro # monte le certificat dans le container
 
+  gestionclubs:
+    build:
+      context: ./GestionClubs
+      dockerfile: GestionClubs/Dockerfile
+    ports:
+      - "8081:8081"   # HTTPS
+      - "8082:8080"   # HTTP
+    depends_on:
+      - sqlserver
+      - identityprovider
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=GestionClubs;User Id=sa;Password=YourStr0ngP@ssword!;TrustServerCertificate=True;"
+      IdentityProvider__Authority: "https://identityprovider:8443"
+      IdentityProvider__Issuer: "myapp"
+      IdentityProvider__Audience: "myappusers"
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_URLS: "https://+:8081;http://+:8080"
+      ASPNETCORE_Kestrel__Certificates__Default__Path: "/https/aspnetapp.crt"
+      ASPNETCORE_Kestrel__Certificates__Default__KeyPath: "/https/aspnetapp.key"
+    volumes:
+      - ./certs:/https:ro
+
 volumes:
   sqldata:
   keys:
