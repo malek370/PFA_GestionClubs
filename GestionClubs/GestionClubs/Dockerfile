@@ -31,7 +31,7 @@ RUN dotnet publish "./GestionClubs.API.csproj" -c $BUILD_CONFIGURATION -o /app/p
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-COPY entrypoint.sh /app/entrypoint.sh
+COPY GestionClubs/entrypoint.sh /app/entrypoint.sh
 # Run as root so update-ca-certificates can trust the mounted self-signed cert
 USER root
 RUN chmod +x /app/entrypoint.sh
