@@ -34,11 +34,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     {
         options.Authority = builder.Configuration["IdentityProvider:Authority"];
         options.RequireHttpsMetadata = false;
-        // Trust self-signed cert for Docker inter-service communication testing
-        options.BackchannelHttpHandler = new HttpClientHandler
-        {
-            ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-        };
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,

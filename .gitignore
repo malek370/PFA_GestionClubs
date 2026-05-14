@@ -1,3 +1,4 @@
 ﻿# Ignore certificates and keys
 certs/
 /GestionClubs/.vs
+docker-compose.build.yml
