@@ -34,11 +34,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     {
         options.Authority = builder.Configuration["IdentityProvider:Authority"];
         options.RequireHttpsMetadata = false;
-        // Trust self-signed cert for Docker inter-service communication
-        options.BackchannelHttpHandler = new HttpClientHandler
-        {
-            ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-        };
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -98,6 +93,19 @@ builder.Services.AddAuthorizationBuilder()
 
 
 var app = builder.Build();
+// Apply migrations only if not using in-memory database (e.g., not in tests)
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    try
+    {
+        dbContext.Database.Migrate(); // Applies all pending migrations
+    }
+    catch (InvalidOperationException ex) when (ex.Message.Contains("InMemory"))
+    {
+        // Skip migration for in-memory databases used in tests
+    }
+}
 
 // Seed the database
 //await app.Services.SeedDatabaseAsync();
