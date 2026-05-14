@@ -7,14 +7,15 @@ namespace IdentityProvider.Controllers
     {
         public static void WellKnownEndpoints(this WebApplication app)
         {
-            app.MapGet("/.well-known/openid-configuration", async () =>
+            app.MapGet("/.well-known/openid-configuration", (HttpContext httpContext) =>
             {
-                var issuer = $"{app.Urls.FirstOrDefault()}/";
+                var request = httpContext.Request;
+                var baseUrl = $"{request.Scheme}://{request.Host}";
                 return Results.Ok(new
                 {
-                    issuer,
-                    jwks_uri = $"{issuer}.well-known/jwks",
-                    token_endpoint = $"{issuer}connect/token",
+                    issuer = app.Configuration["JwtOptions:Issuer"],
+                    jwks_uri = $"{baseUrl}/.well-known/jwks",
+                    token_endpoint = $"{baseUrl}/connect/token",
                 });
             }
 );
