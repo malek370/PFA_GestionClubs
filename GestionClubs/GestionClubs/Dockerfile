@@ -32,7 +32,12 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 COPY GestionClubs/entrypoint.sh /app/entrypoint.sh
-# Run as root so update-ca-certificates can trust the mounted self-signed cert
 USER root
-RUN chmod +x /app/entrypoint.sh
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends sudo \
+    && rm -rf /var/lib/apt/lists/* \
+    && chmod +x /app/entrypoint.sh \
+    && echo "app ALL=(root) NOPASSWD: /usr/sbin/update-ca-certificates, /bin/cp" >> /etc/sudoers.d/app \
+    && chmod 0440 /etc/sudoers.d/app
+USER $APP_UID
 ENTRYPOINT ["/bin/bash", "/app/entrypoint.sh"]
