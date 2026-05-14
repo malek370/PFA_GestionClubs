@@ -94,18 +94,18 @@ builder.Services.AddAuthorizationBuilder()
 
 var app = builder.Build();
 // Apply migrations only if not using in-memory database (e.g., not in tests)
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    try
+
+
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    if (dbContext.Database.IsSqlServer())
     {
         dbContext.Database.Migrate(); // Applies all pending migrations
     }
-    catch (InvalidOperationException ex) when (ex.Message.Contains("InMemory"))
-    {
-        // Skip migration for in-memory databases used in tests
+
     }
-}
+
 
 // Seed the database
 //await app.Services.SeedDatabaseAsync();
