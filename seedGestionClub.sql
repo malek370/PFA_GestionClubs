@@ -1392,9 +1392,9 @@ INSERT INTO Annoucements (ClubId, Title, Content, IsPublic, CreatinDate) VALUES
 
  -- Corrections
 UPDATE Clubs
-SET Documents = '["' || REPLACE(Documents, ',', '","') || '"]'
+SET Documents = '["' + REPLACE(Documents, ',', '","') + '"]'
 WHERE Documents IS NOT NULL AND Documents != '' AND Documents NOT LIKE '[%';
 
 UPDATE Events
-SET Tags = '["' || REPLACE(Tags, ',', '","') || '"]'
+SET Tags = '["' + REPLACE(Tags, ',', '","') + '"]'
 WHERE Tags IS NOT NULL AND Tags != '' AND Tags NOT LIKE '[%';

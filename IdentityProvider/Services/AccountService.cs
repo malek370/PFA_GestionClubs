@@ -63,7 +63,12 @@ namespace IdentityProvider.Services
             var (refreshToken_new, refreshTokenExpiration) = _authTokenProcessor.GenerateRefreshToken();
             user.RefreshToken = refreshToken_new;
             user.RefreshTokenExpiryTime = refreshTokenExpiration;
-            await _userManager.UpdateAsync(user);
+            var updateUserResult = await _userManager.UpdateAsync(user);
+            if (!updateUserResult.Succeeded)
+            {
+                Console.WriteLine($"Failed to update user with new refresh token: {string.Join(", ", updateUserResult.Errors.Select(e => e.Description))}");
+
+            }
             _authTokenProcessor.WriteAuthTokenAsHttpOnlyCookie("ACCESS_TOKEN", accessToken, expirationDate);
             _authTokenProcessor.WriteAuthTokenAsHttpOnlyCookie("REFRESH_TOKEN", user.RefreshToken, user.RefreshTokenExpiryTime);
             return new TokenResponse
