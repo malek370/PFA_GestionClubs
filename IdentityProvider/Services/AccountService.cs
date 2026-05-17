@@ -53,8 +53,7 @@ namespace IdentityProvider.Services
             var user = await _userRepository.GetUserByRefreshTokenAsync(refreshToken);
             if (user == null)  throw new RefreshTokenException("Invalid refresh token user is null"); 
             if (user.RefreshToken != refreshToken) throw new RefreshTokenException("Invalid refresh token not same as user's stored token");
-            if(user.RefreshTokenExpiryTime <= DateTime.UtcNow) throw new RefreshTokenException("Refresh token has expired");
-            if (user == null || user.RefreshTokenExpiryTime <= DateTime.UtcNow) throw new RefreshTokenException("Invalid refresh token");
+            if(user.RefreshTokenExpiryTime <= DateTime.UtcNow) throw new RefreshTokenException($"Refresh token has expired now : {DateTime.UtcNow}  | token expiry : {user.RefreshTokenExpiryTime}" );
             return await GenerateAndStoreTokensAsync(user);
             //repeated code
 
