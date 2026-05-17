@@ -2,3 +2,6 @@
 certs/
 /GestionClubs/.vs
 docker-compose.build.yml
+/GestionClubs/Application/GestionClubs.Application.csproj.lscache
+/GestionClubs/Application.Test/Application.Test.csproj.lscache
+*.lscache
