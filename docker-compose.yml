@@ -1,4 +1,31 @@
 ﻿services:
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    hostname: kafka
+    container_name: kafka
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:29092,CONTROLLER://0.0.0.0:9093,PLAINTEXT_HOST://0.0.0.0:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
   sqlserver-idp:
     image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
@@ -32,7 +59,22 @@
       timeout: 5s
       retries: 5
 
+  init-kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    depends_on:
+      kafka:
+        condition: service_healthy
+    command: >
+      bash -c "
+        kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic user-registered --partitions 1 --replication-factor 1 &&
+        kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic user-promoted-to-club-admin --partitions 1 --replication-factor 1 &&
+        echo 'All topics created successfully'
+      "
+
   identityprovider:
+    build:
+      context: ./IdentityProvider
+      dockerfile: Dockerfile
     image: mbokri/identityprovider:latest
     ports:
       - "8080:8080"   # HTTP (optionnel, tu peux l'enlever)
@@ -40,7 +82,13 @@
     depends_on:
       sqlserver-idp:
         condition: service_healthy
+      init-kafka:
+        condition: service_completed_successfully
     environment:
+      Kafka__BootstrapServers: "kafka:29092"
+      Kafka__ProducerTopic: "user-registered"
+      Kafka__ConsumerTopic: "user-promoted-to-club-admin"
+      Kafka__ConsumerGroupId: "identity-provider-group"
       ConnectionStrings__DefaultConnection: "Server=sqlserver-idp;Database=IdentityProvider;User Id=sa;Password=YourStr0ngP@ssword!;TrustServerCertificate=True;"
       JwtOptions__Secret: "votre-secret-de-production-suffisamment-long"
       JwtOptions__Issuer: "myapp"
@@ -56,6 +104,9 @@
       - ./certs:/https:ro # monte le certificat dans le container
 
   gestionclubs:
+    build:
+      context: ./GestionClubs
+      dockerfile: GestionClubs/Dockerfile
     image: mbokri/gestionclubs:latest
     ports:
       - "8081:8081"   # HTTPS
@@ -65,7 +116,13 @@
         condition: service_healthy
       identityprovider:
         condition: service_started
+      init-kafka:
+        condition: service_completed_successfully
     environment:
+      Kafka__BootstrapServers: "kafka:29092"
+      Kafka__ProducerTopic: "user-promoted-to-club-admin"
+      Kafka__ConsumerTopic: "user-registered"
+      Kafka__ConsumerGroupId: "gestion-clubs-group"
       ConnectionStrings__DefaultConnection: "Server=sqlserver-clubs;Database=GestionClubs;User Id=sa;Password=YourStr0ngP@ssword!;TrustServerCertificate=True;"
       IdentityProvider__Authority: "https://identityprovider:8443"
       IdentityProvider__Issuer: "myapp"
@@ -76,6 +133,18 @@
       ASPNETCORE_Kestrel__Certificates__Default__KeyPath: "/https/aspnetapp.key"
     volumes:
       - ./certs:/https:ro
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - "9080:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+    depends_on:
+      kafka:
+        condition: service_healthy
 
 volumes:
   sqldata-idp:

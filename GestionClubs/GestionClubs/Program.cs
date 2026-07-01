@@ -1,11 +1,16 @@
 using GestionClubs.API.Controllers;
 using GestionClubs.API.Handlers;
+using GestionClubs.Application.IRepositories;
 using GestionClubs.Application.IServices;
 using GestionClubs.Application.Services;
 using GestionClubs.Domain.Entities;
+using GestionClubs.Infrastructure.Consumers;
+using GestionClubs.Infrastructure.Decorators;
+using GestionClubs.Infrastructure.Kafka;
 using GestionClubs.Infrastructure.SqlServerDbContext;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 
@@ -19,14 +24,37 @@ builder.Services.AddOpenApi();
 builder.Services.AddInfrastructureServices_SqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 
 // Register application services
-builder.Services.AddScoped<IClubServices, ClubServices>();
-builder.Services.AddScoped<IMembersService, MembersService>();
-builder.Services.AddScoped<IAdhesionService, AdhesionService>();
+builder.Services.AddScoped<ClubServices>();
+builder.Services.AddScoped<IClubServices>(sp =>
+    new ClubServicesKafkaDecorator(
+        sp.GetRequiredService<ClubServices>(),
+        sp.GetRequiredService<IKafkaProducer>(),
+        sp.GetRequiredService<IOptions<KafkaOptions>>()
+    ));
+builder.Services.AddScoped<MembersService>();
+builder.Services.AddScoped<IMembersService>(sp =>
+    new MembersServiceKafkaDecorator(
+        sp.GetRequiredService<MembersService>(),
+        sp.GetRequiredService<IKafkaProducer>(),
+        sp.GetRequiredService<IOptions<KafkaOptions>>(),
+        sp.GetRequiredService<IBaseRepository<Member>>()
+    ));
+builder.Services.AddScoped<AdhesionService>();
+builder.Services.AddScoped<IAdhesionService>(sp =>
+    new AdhesionServiceKafkaDecorator(
+        sp.GetRequiredService<AdhesionService>(),
+        sp.GetRequiredService<IKafkaProducer>(),
+        sp.GetRequiredService<IOptions<KafkaOptions>>(),
+        sp.GetRequiredService<IBaseRepository<Adhesion>>()
+    ));
 builder.Services.AddScoped<IAnnoucementService, AnnoucementService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddExceptionHandler<GlobalExcpectionHandler>();
+builder.Services.Configure<KafkaOptions>(builder.Configuration.GetSection(KafkaOptions.SectionName));
+builder.Services.AddSingleton<IKafkaProducer, KafkaProducer>();
+builder.Services.AddHostedService<UserRegisteredConsumer>();
 
 // Authentication & Authorization
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

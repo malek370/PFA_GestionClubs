@@ -2,7 +2,7 @@
 echo "Waiting 20 seconds for SQL Server to start..."
 sleep 20
 # G�n�rer les cl�s RSA si elles n'existent pas
-if [ ! -f /app/keys/private_key.pem ]; then
+if [ ! -f /app/keys/private_key.pem ] || [ ! -f /app/keys/public_key.pem ]; then
   echo "Generating RSA keys..."
   openssl genrsa -out /app/keys/private_key.pem 2048
   openssl rsa -in /app/keys/private_key.pem -pubout -outform PEM | \
