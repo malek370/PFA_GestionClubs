@@ -7,3 +7,4 @@ docker-compose.build.yml
 *.lscache
 KAFKA_INTEGRATION_PLAN.md
 *.coverage
+*.py
