@@ -14,23 +14,7 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["IdentityProvider.csproj", "."]
 RUN dotnet restore "./IdentityProvider.csproj"
-COPY Abstracts/ ./Abstracts/
-COPY Controllers/ ./Controllers/
-COPY DbContext/ ./DbContext/
-COPY Entities/ ./Entities/
-COPY Exceptions/ ./Exceptions/
-COPY Handlers/ ./Handlers/
-COPY Options/ ./Options/
-COPY Repositories/ ./Repositories/
-COPY Requests/ ./Requests/
-COPY Migrations/ ./Migrations/
-COPY Processors/ ./Processors/
-COPY Services/ ./Services/
-COPY appsettings.json ./
-COPY Program.cs ./
-COPY Validators/ ./Validators/
-COPY Migrations/ ./Migrations/
-COPY Responses/ ./Responses/
+COPY . .
 WORKDIR "/src/."
 RUN dotnet build "IdentityProvider.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
@@ -43,10 +27,14 @@ RUN dotnet publish "./IdentityProvider.csproj" -c $BUILD_CONFIGURATION -o /app/p
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+COPY entrypoint.sh /app/entrypoint.sh
 USER root
-RUN apt-get update && apt-get install -y --no-install-recommends openssl && rm -rf /var/lib/apt/lists/* && mkdir -p /app/keys && chown -R $APP_UID /app/keys
+RUN apt-get update && apt-get install -y --no-install-recommends openssl && rm -rf /var/lib/apt/lists/* \
+    && mkdir -p /app/keys && chown -R $APP_UID /app/keys \
+    && chown $APP_UID /app \
+    && chmod +x /app/entrypoint.sh
 USER $APP_UID
-ENTRYPOINT ["sh", "-c", "if [ ! -f /app/keys/private_key.pem ]; then openssl genrsa -out /app/keys/private_key.pem 2048 && openssl rsa -in /app/keys/private_key.pem -pubout -outform PEM | openssl rsa -pubin -RSAPublicKey_out -out /app/keys/public_key.pem; fi && ln -sf /app/keys/private_key.pem /app/private_key.pem && ln -sf /app/keys/public_key.pem /app/public_key.pem && exec dotnet IdentityProvider.dll"]
+ENTRYPOINT ["/bin/sh", "/app/entrypoint.sh"]
 
 
 # Commandes pour construire et exécuter le conteneur

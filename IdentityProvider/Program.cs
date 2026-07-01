@@ -1,8 +1,11 @@
 ﻿using IdentityProvider.Abstracts;
+using IdentityProvider.Consumers;
 using IdentityProvider.Controllers;
 using IdentityProvider.DbContext;
+using IdentityProvider.Decorators;
 using IdentityProvider.Entities;
 using IdentityProvider.Handlers;
+using IdentityProvider.Kafka;
 using IdentityProvider.Options;
 using IdentityProvider.Processors;
 using IdentityProvider.Repositories;
@@ -12,6 +15,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using System.Security.Cryptography;
@@ -23,10 +27,21 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<SeedDb>();
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<AccountService>();
+builder.Services.AddScoped<IAccountService>(sp =>
+    new AccountServiceKafkaDecorator(
+        sp.GetRequiredService<AccountService>(),
+        sp.GetRequiredService<IKafkaProducer>(),
+        sp.GetRequiredService<IOptions<KafkaOptions>>(),
+        sp.GetRequiredService<UserManager<User>>()
+    ));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthTokenProcessor, AuthTokenProcessorAssymetricKey>();
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JwtOptions"));
+builder.Services.Configure<KafkaOptions>(builder.Configuration.GetSection(KafkaOptions.SectionName));
+builder.Services.AddSingleton<IKafkaProducer, KafkaProducer>();
+builder.Services.AddHostedService<UserPromotedConsumer>();
+builder.Services.AddHostedService<UserPromotedToClubMemberConsumer>();
 
 //dbcontext
 builder.Services.AddDbContext<IdpDbContext>(opt =>

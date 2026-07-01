@@ -1,4 +1,5 @@
 using IdentityProvider.Abstracts;
+using IdentityProvider.Consumers;
 using IdentityProvider.DbContext;
 using IdentityProvider.Processors;
 using Microsoft.AspNetCore.Hosting;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Moq;
 using System.IO;
 using System.Security.Cryptography;
@@ -38,7 +40,11 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
                 ["JwtOptions:Audience"] = "test-audience",
                 ["JwtOptions:ExpirationMinutes"] = "15",
                 ["JwtOptions:RefreshTokenExpirationDays"] = "7",
-                ["ConnectionStrings:DefaultConnection"] = "Data Source=:memory:"
+                ["ConnectionStrings:DefaultConnection"] = "Data Source=:memory:",
+                ["Kafka:BootstrapServers"] = "localhost:9092",
+                ["Kafka:ProducerTopic"] = "test-producer-topic",
+                ["Kafka:ConsumerTopic"] = "test-consumer-topic",
+                ["Kafka:ConsumerGroupId"] = "test-group"
             });
         });
 
@@ -63,6 +69,11 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
             var seedDescriptor = services.SingleOrDefault(
                 d => d.ServiceType == typeof(SeedDb));
             if (seedDescriptor != null) services.Remove(seedDescriptor);
+
+            // Supprimer le consumer Kafka pour éviter les erreurs de connexion dans les tests
+            var kafkaConsumerDescriptor = services.SingleOrDefault(
+                d => d.ImplementationType == typeof(UserPromotedConsumer));
+            if (kafkaConsumerDescriptor != null) services.Remove(kafkaConsumerDescriptor);
         });
 
         builder.UseEnvironment("Production");
