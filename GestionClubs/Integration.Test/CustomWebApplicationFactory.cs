@@ -11,6 +11,7 @@ using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using GestionClubs.Infrastructure.Consumers;
 using GestionClubs.Infrastructure.Kafka;
 
 namespace Integration.Test;
@@ -54,6 +55,10 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
             var kafkaDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IKafkaProducer));
             if (kafkaDescriptor != null) services.Remove(kafkaDescriptor);
             services.AddSingleton<IKafkaProducer, FakeKafkaProducer>();
+
+            // Remove the Kafka consumer background service to avoid connecting to a real broker in tests
+            var consumerDescriptor = services.SingleOrDefault(d => d.ImplementationType == typeof(UserRegisteredConsumer));
+            if (consumerDescriptor != null) services.Remove(consumerDescriptor);
         });
 
         builder.UseEnvironment("Development");
