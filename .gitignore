@@ -6,3 +6,4 @@ docker-compose.build.yml
 /GestionClubs/Application.Test/Application.Test.csproj.lscache
 *.lscache
 KAFKA_INTEGRATION_PLAN.md
+*.coverage
