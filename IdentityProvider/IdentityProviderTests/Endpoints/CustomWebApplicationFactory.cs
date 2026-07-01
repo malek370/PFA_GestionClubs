@@ -72,7 +72,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 
             // Supprimer le consumer Kafka pour éviter les erreurs de connexion dans les tests
             var kafkaConsumerDescriptor = services.SingleOrDefault(
-                d => d.ImplementationType == typeof(UserPromotedConsumer));
+                d => d.ImplementationType == typeof(UserPromotedToClubMemberConsumer));
             if (kafkaConsumerDescriptor != null) services.Remove(kafkaConsumerDescriptor);
         });
 

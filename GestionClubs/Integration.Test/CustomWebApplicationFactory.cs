@@ -11,6 +11,7 @@ using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using GestionClubs.Infrastructure.Kafka;
 
 namespace Integration.Test;
 
@@ -48,6 +49,11 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
             var currentUserDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(ICurrentUserService));
             if (currentUserDescriptor != null) services.Remove(currentUserDescriptor);
             services.AddScoped<ICurrentUserService>(_ => new FakeCurrentUserService(CurrentUserEmail));
+
+            // Replace IKafkaProducer with a fake to avoid Kafka dependency in tests
+            var kafkaDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IKafkaProducer));
+            if (kafkaDescriptor != null) services.Remove(kafkaDescriptor);
+            services.AddSingleton<IKafkaProducer, FakeKafkaProducer>();
         });
 
         builder.UseEnvironment("Development");
@@ -120,5 +126,14 @@ public class TestAuthHandler(
         var ticket = new AuthenticationTicket(principal, "Test");
 
         return Task.FromResult(AuthenticateResult.Success(ticket));
+    }
+}
+
+public class FakeKafkaProducer : IKafkaProducer
+{
+    public Task PublishAsync<T>(string topic, string key, T message, CancellationToken ct = default)
+    {
+        // Do nothing in tests - just return a completed task
+        return Task.CompletedTask;
     }
 }
