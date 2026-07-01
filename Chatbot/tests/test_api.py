@@ -10,8 +10,8 @@ import jwt
 import pytest
 from fastapi.testclient import TestClient
 
-from app.config import get_settings
 from app.db import get_db
+from tests.conftest import TEST_PRIVATE_KEY
 from app.main import app
 from app.schemas import ChatAskResponse, SuggestedAction
 from app.services import faq_service as faq_service_mod
@@ -52,7 +52,11 @@ def client():
 
 
 def _admin_token() -> str:
-    return jwt.encode({"sub": "admin-1", "roles": ["ADMIN"]}, get_settings().jwt_secret, algorithm="HS256")
+    return jwt.encode(
+        {"sub": "admin-1", "role": ["ADMIN"], "iss": "IdentityProvider", "aud": "myappusers"},
+        TEST_PRIVATE_KEY,
+        algorithm="RS256",
+    )
 
 
 # ---- /ask ----

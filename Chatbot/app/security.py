@@ -1,12 +1,20 @@
 import logging
 from dataclasses import dataclass, field
+from functools import lru_cache
 
 import jwt
+from jwt import PyJWKClient
 from fastapi import Depends, HTTPException, Request, status
 
 from app.config import get_settings
 
 log = logging.getLogger(__name__)
+
+
+@lru_cache(maxsize=1)
+def _get_jwks_client() -> PyJWKClient:
+    """Lazy singleton PyJWKClient — fetches and caches IdentityProvider public keys."""
+    return PyJWKClient(get_settings().idp_jwks_url)
 
 
 @dataclass
@@ -24,6 +32,10 @@ class CurrentUser:
 
 
 def _normalize_roles(raw: object) -> list[str]:
+    # .NET ClaimTypes.Role serialises as a single string when there is one role,
+    # or a JSON array when there are several; accept both forms.
+    if isinstance(raw, str):
+        raw = [raw]
     if not isinstance(raw, list):
         return []
     roles: list[str] = []
@@ -34,25 +46,32 @@ def _normalize_roles(raw: object) -> list[str]:
 
 
 def get_current_user(request: Request) -> CurrentUser:
-    """Stateless JWT validation. Absent/invalid tokens yield an anonymous user
-    (the request continues unauthenticated), matching ``JwtAuthFilter``."""
+    """Stateless JWT validation using IdentityProvider RSA public key (RS256).
+    Absent/invalid tokens yield an anonymous user — the request continues
+    unauthenticated, matching the behaviour of ``JwtAuthFilter``."""
     header = request.headers.get("Authorization")
     if not header or not header.startswith("Bearer "):
         return CurrentUser()
 
     token = header[7:]
+    settings = get_settings()
     try:
+        signing_key = _get_jwks_client().get_signing_key_from_jwt(token)
         claims = jwt.decode(
             token,
-            get_settings().jwt_secret,
-            algorithms=["HS256"],
+            signing_key.key,
+            algorithms=["RS256"],
+            issuer=settings.jwt_issuer,
+            audience=settings.jwt_audience,
         )
-    except jwt.PyJWTError as e:  # noqa: BLE001 - mirror "Invalid JWT" debug log
-        log.debug("Invalid JWT: %s", e)
+    except Exception as e:  # noqa: BLE001 — any failure (bad sig, expired, JWKS fetch) → anonymous
+        log.debug("JWT validation failed: %s", e)
         return CurrentUser()
 
     user_id = claims.get("sub") or "anonymous"
-    roles = _normalize_roles(claims.get("roles"))
+    # .NET maps ClaimTypes.Role → "role"; accept "roles" for test/legacy tokens
+    raw_roles = claims.get("role") or claims.get("roles")
+    roles = _normalize_roles(raw_roles)
     return CurrentUser(user_id=user_id, roles=roles, authenticated=True)
 
 

@@ -29,10 +29,12 @@ class Settings(BaseSettings):
 
     # Server
     server_host: str = "127.0.0.1"
-    server_port: int = 8080
+    server_port: int = 8083
 
-    # Security - HS256 shared secret (>= 32 bytes)
-    jwt_secret: str = "change-me-change-me-change-me-change-me-please"
+    # Security — RSA/RS256: public key fetched from IdentityProvider JWKS endpoint
+    idp_jwks_url: str = "http://localhost:7253/.well-known/jwks"
+    jwt_issuer: str = "IdentityProvider"
+    jwt_audience: str = "myappusers"
 
 
 @lru_cache

@@ -1,12 +1,12 @@
-"""Tests for stateless JWT auth, mirroring JwtAuthFilter / JwtService."""
+"""Tests for stateless JWT auth using IdentityProvider RS256 public key."""
 from types import SimpleNamespace
 
 import jwt
 import pytest
 from fastapi import HTTPException
 
-from app.config import get_settings
 from app.security import get_current_user, require_admin
+from tests.conftest import TEST_PRIVATE_KEY
 
 
 def _request_with_auth(token: str | None) -> SimpleNamespace:
@@ -15,7 +15,13 @@ def _request_with_auth(token: str | None) -> SimpleNamespace:
 
 
 def _make_token(**claims) -> str:
-    return jwt.encode(claims, get_settings().jwt_secret, algorithm="HS256")
+    """Sign a test JWT with the test RSA private key (RS256).
+
+    Always includes issuer and audience to match Settings defaults.
+    """
+    defaults = {"iss": "IdentityProvider", "aud": "myappusers"}
+    defaults.update(claims)
+    return jwt.encode(defaults, TEST_PRIVATE_KEY, algorithm="RS256")
 
 
 def test_no_header_is_anonymous():
@@ -25,7 +31,8 @@ def test_no_header_is_anonymous():
 
 
 def test_valid_token_extracts_subject_and_roles():
-    token = _make_token(sub="user-42", roles=["ADMIN", "USER"])
+    # .NET sends roles under the "role" claim (ClaimTypes.Role mapping)
+    token = _make_token(sub="user-42", role=["ADMIN", "USER"])
     user = get_current_user(_request_with_auth(token))
     assert user.user_id == "user-42"
     assert user.authenticated is True
@@ -33,21 +40,35 @@ def test_valid_token_extracts_subject_and_roles():
     assert user.has_role("ROLE_USER")
 
 
+def test_single_role_string_is_accepted():
+    """A single role is serialised as a plain string in the JWT, not a list."""
+    token = _make_token(sub="user-1", role="ADMIN")
+    user = get_current_user(_request_with_auth(token))
+    assert user.has_role("ADMIN")
+
+
 def test_invalid_signature_is_anonymous():
-    bad = jwt.encode({"sub": "x"}, "a-completely-different-secret-value", algorithm="HS256")
+    from cryptography.hazmat.primitives.asymmetric import rsa as _rsa
+
+    other_key = _rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    bad = jwt.encode(
+        {"sub": "x", "iss": "IdentityProvider", "aud": "myappusers"},
+        other_key,
+        algorithm="RS256",
+    )
     user = get_current_user(_request_with_auth(bad))
     assert user.user_id == "anonymous"
     assert user.authenticated is False
 
 
 def test_require_admin_allows_admin():
-    token = _make_token(sub="boss", roles=["ADMIN"])
+    token = _make_token(sub="boss", role=["ADMIN"])
     user = get_current_user(_request_with_auth(token))
     assert require_admin(user) is user
 
 
 def test_require_admin_rejects_non_admin():
-    token = _make_token(sub="joe", roles=["USER"])
+    token = _make_token(sub="joe", role=["USER"])
     user = get_current_user(_request_with_auth(token))
     with pytest.raises(HTTPException) as exc:
         require_admin(user)
