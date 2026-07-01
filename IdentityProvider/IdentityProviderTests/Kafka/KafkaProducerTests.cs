@@ -36,7 +36,7 @@ namespace IdentityProvider.Tests.Kafka
         [Fact]
         public void Constructor_WithValidOptions_CreatesInstance()
         {
-            // Arrange & Act
+            // Arrange & Act kafka
             using var producer = new KafkaProducer(_optionsMock.Object, _loggerMock.Object);
 
             // Assert
