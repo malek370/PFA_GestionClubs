@@ -1,0 +1,70 @@
+﻿using GestionClubs.Application.Events;
+using GestionClubs.Application.IServices;
+using GestionClubs.Domain.DTOs;
+using GestionClubs.Domain.Pagination;
+using GestionClubs.Infrastructure.Kafka;
+using Microsoft.Extensions.Options;
+
+namespace GestionClubs.Infrastructure.Decorators
+{
+    public class EventServiceKafkaDecorator : IEventService
+    {
+        private readonly IEventService _inner;
+        private readonly IKafkaProducer _producer;
+        private readonly IOptions<KafkaOptions> _options;
+
+        public EventServiceKafkaDecorator(
+            IEventService inner,
+            IKafkaProducer producer,
+            IOptions<KafkaOptions> options)
+        {
+            _inner = inner;
+            _producer = producer;
+            _options = options;
+        }
+
+        public async Task<GetEventDTO> AddEvent(CreateEventDTO createEventDTO)
+        {
+            var result = await _inner.AddEvent(createEventDTO);
+
+            var @event = new EventCreatedEvent
+            {
+                EventId = result.Id,
+                Title = result.Title,
+                Description = result.Description,
+                Location = result.Location,
+                StartDate = result.StartDate,
+                ClubName = result.ClubName,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            await _producer.PublishAsync(
+                _options.Value.EventsTopic,
+                result.Id.ToString(),
+                @event);
+
+            return result;
+        }
+
+        public Task<bool> DeleteEvent(int id) 
+            => _inner.DeleteEvent(id);
+
+        public Task<PagedResult<GetEventDTO>> GetEvents(List<string>? tags, PaginationParams pagination) 
+            => _inner.GetEvents(tags, pagination);
+
+        public Task<GetEventDTO> JoinEvent(int eventId) 
+            => _inner.JoinEvent(eventId);
+
+        public Task<GetEventDTO> LeaveEvent(int eventId) 
+            => _inner.LeaveEvent(eventId);
+
+        public Task<GetEventDTO> GetEventById(int id) 
+            => _inner.GetEventById(id);
+
+        public Task<PagedResult<GetEventDTO>> GetUserEvents(PaginationParams pagination) 
+            => _inner.GetUserEvents(pagination);
+
+        public Task<PagedResult<GetEventDTO>> GetClubEvents(int clubId, PaginationParams pagination) 
+            => _inner.GetClubEvents(clubId, pagination);
+    }
+}

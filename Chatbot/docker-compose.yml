@@ -1,0 +1,34 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: uniclubs-postgres
+    environment:
+      POSTGRES_USER: uniclubs
+      POSTGRES_PASSWORD: uniclubs
+      POSTGRES_DB: uniclubs
+    ports:
+      - "5432:5432"
+    volumes:
+      - uniclubs_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U uniclubs"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  chatbot:
+    build: .
+    container_name: uniclubs-chatbot
+    ports:
+      - "8083:8083"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: "postgresql+psycopg://uniclubs:uniclubs@postgres:5432/uniclubs"
+      KAFKA_ENABLED: "true"
+      KAFKA_BOOTSTRAP_SERVERS: "kafka:29092"
+      KAFKA_CONSUMER_GROUP_ID: "chatbot-group"
+
+volumes:
+  uniclubs_pgdata:
