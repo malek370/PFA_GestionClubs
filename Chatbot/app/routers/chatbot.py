@@ -13,7 +13,7 @@ from app.schemas import (
     FAQRequest,
     FAQResponse,
 )
-from app.security import CurrentUser, get_current_user, require_admin
+from app.security import CurrentUser, get_current_user, require_admin, require_authenticated
 from app.services.chatbot_service import chatbot_service
 from app.services.faq_service import faq_service
 
@@ -21,24 +21,25 @@ router = APIRouter(prefix="/api/chatbot", tags=["chatbot"])
 
 DbSession = Annotated[Session, Depends(get_db)]
 CurrentUserDep = Annotated[CurrentUser, Depends(get_current_user)]
+AuthenticatedDep = Annotated[CurrentUser, Depends(require_authenticated)]
 AdminDep = Annotated[CurrentUser, Depends(require_admin)]
 SessionIdHeader = Annotated[str | None, Header(alias="X-Session-Id")]
 
 
-# 1. Ask a question (public)
+# 1. Ask a question (authenticated)
 @router.post("/ask")
 def ask(
     body: ChatAskRequest,
     db: DbSession,
-    user: CurrentUserDep,
+    user: AuthenticatedDep,
     x_session_id: SessionIdHeader = None,
 ) -> ChatAskResponse:
     return chatbot_service.ask(db, body, x_session_id, user)
 
 
-# 2. List FAQs (public)
+# 2. List FAQs (authenticated)
 @router.get("/faqs")
-def list_faqs(db: DbSession) -> list[FAQResponse]:
+def list_faqs(db: DbSession, _: AuthenticatedDep) -> list[FAQResponse]:
     return [FAQResponse.model_validate(f) for f in faq_service.find_all(db)]
 
 

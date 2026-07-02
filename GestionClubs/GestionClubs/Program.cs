@@ -47,10 +47,22 @@ builder.Services.AddScoped<IAdhesionService>(sp =>
         sp.GetRequiredService<IOptions<KafkaOptions>>(),
         sp.GetRequiredService<IBaseRepository<Adhesion>>()
     ));
-builder.Services.AddScoped<IAnnoucementService, AnnoucementService>();
+builder.Services.AddScoped<AnnoucementService>();
+builder.Services.AddScoped<IAnnoucementService>(sp =>
+    new AnnouncementServiceKafkaDecorator(
+        sp.GetRequiredService<AnnoucementService>(),
+        sp.GetRequiredService<IKafkaProducer>(),
+        sp.GetRequiredService<IOptions<KafkaOptions>>()
+    ));
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
-builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddScoped<EventService>();
+builder.Services.AddScoped<IEventService>(sp =>
+    new EventServiceKafkaDecorator(
+        sp.GetRequiredService<EventService>(),
+        sp.GetRequiredService<IKafkaProducer>(),
+        sp.GetRequiredService<IOptions<KafkaOptions>>()
+    ));
 builder.Services.AddExceptionHandler<GlobalExcpectionHandler>();
 builder.Services.Configure<KafkaOptions>(builder.Configuration.GetSection(KafkaOptions.SectionName));
 builder.Services.AddSingleton<IKafkaProducer, KafkaProducer>();

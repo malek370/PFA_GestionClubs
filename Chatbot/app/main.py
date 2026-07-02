@@ -8,6 +8,7 @@ from app.config import get_settings
 from app.db import SessionLocal
 from app.routers.chatbot import router as chatbot_router
 from app.services.faq_indexing_service import faq_indexing_service
+from app.services.kafka_consumer import kafka_consumer_service
 from app.services.knowledge_service import knowledge_service
 from app.services.vector_store import vector_store
 
@@ -37,7 +38,10 @@ async def lifespan(app: FastAPI):
             knowledge_service.index_all(db)
         finally:
             db.close()
+
+    kafka_consumer_service.start()
     yield
+    kafka_consumer_service.stop()
 
 
 app = FastAPI(title="UniClubs Chatbot (Python)", version="1.0.0", lifespan=lifespan)

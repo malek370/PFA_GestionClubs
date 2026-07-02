@@ -32,19 +32,19 @@ def test_no_header_is_anonymous():
 
 def test_valid_token_extracts_subject_and_roles():
     # .NET sends roles under the "role" claim (ClaimTypes.Role mapping)
-    token = _make_token(sub="user-42", role=["ADMIN", "USER"])
+    token = _make_token(sub="user-42", role=["PlatformAdmin", "USER"])
     user = get_current_user(_request_with_auth(token))
     assert user.user_id == "user-42"
     assert user.authenticated is True
-    assert user.has_role("ADMIN")
+    assert user.has_role("PlatformAdmin")
     assert user.has_role("ROLE_USER")
 
 
 def test_single_role_string_is_accepted():
     """A single role is serialised as a plain string in the JWT, not a list."""
-    token = _make_token(sub="user-1", role="ADMIN")
+    token = _make_token(sub="user-1", role="PlatformAdmin")
     user = get_current_user(_request_with_auth(token))
-    assert user.has_role("ADMIN")
+    assert user.has_role("PlatformAdmin")
 
 
 def test_invalid_signature_is_anonymous():
@@ -62,7 +62,7 @@ def test_invalid_signature_is_anonymous():
 
 
 def test_require_admin_allows_admin():
-    token = _make_token(sub="boss", role=["ADMIN"])
+    token = _make_token(sub="boss", role=["PlatformAdmin"])
     user = get_current_user(_request_with_auth(token))
     assert require_admin(user) is user
 

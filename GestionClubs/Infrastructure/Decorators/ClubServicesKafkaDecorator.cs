@@ -27,7 +27,21 @@ namespace GestionClubs.Infrastructure.Decorators
         {
             var result = await _inner.CreateClub(createClubDTO);
 
-            var @event = new UserPromotedToClubAdminEvent
+            var clubCreatedEvent = new ClubCreatedEvent
+            {
+                ClubId = result.Id,
+                ClubName = result.Name,
+                Description = result.Description,
+                PresidentEmail = result.PresidentMail,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            await _producer.PublishAsync(
+                _options.Value.ClubsTopic,
+                result.Id.ToString(),
+                clubCreatedEvent);
+
+            var userPromotedEvent = new UserPromotedToClubAdminEvent
             {
                 Email = createClubDTO.Email,
                 ClubId = result.Id,
@@ -37,7 +51,7 @@ namespace GestionClubs.Infrastructure.Decorators
             await _producer.PublishAsync(
                 _options.Value.ProducerTopic,
                 createClubDTO.Email,
-                @event);
+                userPromotedEvent);
 
             return result;
         }

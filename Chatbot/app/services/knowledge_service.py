@@ -11,7 +11,7 @@ import logging
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.models import Announcement, Club, Event
+from app.models import Announcement, Club, Event, Member
 from app.services.embeddings import embed_texts
 from app.services.vector_store import vector_store
 
@@ -147,6 +147,104 @@ class KnowledgeService:
         except Exception as e:  # noqa: BLE001
             log.warning("Domain indexing failed (likely missing GEMINI_API_KEY or DB): %s", e)
             return 0
+
+    def index_club_by_id(self, club_id: int) -> None:
+        """Re-index a single club (and its events + announcements) in the vector store."""
+        from app.db import SessionLocal  # avoid circular import at module level
+        from sqlalchemy.orm import selectinload
+
+        try:
+            with SessionLocal() as db:
+                club = db.execute(
+                    select(Club)
+                    .where(Club.id == club_id)
+                    .options(
+                        selectinload(Club.members).selectinload(Member.user),
+                        selectinload(Club.events).selectinload(Event.participants),
+                        selectinload(Club.announcements),
+                    )
+                ).scalar_one_or_none()
+
+                if not club:
+                    log.warning("index_club_by_id: club %s not found", club_id)
+                    return
+
+                ids: list[str] = []
+                documents: list[str] = []
+                metadatas: list[dict] = []
+
+                ids.append(f"club:{club.id}")
+                documents.append(self._club_document(club))
+                metadatas.append({"type": "club", "entityId": str(club.id), "name": club.name, "title": club.name})
+
+                for ev in club.events:
+                    ids.append(f"event:{ev.id}")
+                    documents.append(self._event_document(ev, club.name))
+                    metadatas.append({"type": "event", "entityId": str(ev.id), "clubId": str(club.id), "title": ev.title})
+
+                for ann in club.announcements:
+                    ids.append(f"announcement:{ann.id}")
+                    documents.append(self._announcement_document(ann, club.name))
+                    metadatas.append({"type": "announcement", "entityId": str(ann.id), "clubId": str(club.id), "title": ann.title})
+
+            embeddings = embed_texts(documents)
+            for doc_id, doc, emb, meta in zip(ids, documents, embeddings, metadatas):
+                vector_store.upsert(doc_id, doc, emb, meta)
+            log.info("Re-indexed club %s (%d docs).", club_id, len(ids))
+        except Exception as e:  # noqa: BLE001
+            log.warning("index_club_by_id(%s) failed: %s", club_id, e)
+
+    def index_event_by_id(self, event_id: int) -> None:
+        """Re-index a single event in the vector store."""
+        from app.db import SessionLocal
+        from sqlalchemy.orm import selectinload
+
+        try:
+            with SessionLocal() as db:
+                ev = db.execute(
+                    select(Event)
+                    .where(Event.id == event_id)
+                    .options(selectinload(Event.participants), selectinload(Event.club))
+                ).scalar_one_or_none()
+
+                if not ev or not ev.club:
+                    log.warning("index_event_by_id: event %s not found", event_id)
+                    return
+
+                doc = self._event_document(ev, ev.club.name)
+                meta = {"type": "event", "entityId": str(ev.id), "clubId": str(ev.club_id), "title": ev.title}
+
+            emb = embed_texts([doc])[0]
+            vector_store.upsert(f"event:{event_id}", doc, emb, meta)
+            log.info("Re-indexed event %s.", event_id)
+        except Exception as e:  # noqa: BLE001
+            log.warning("index_event_by_id(%s) failed: %s", event_id, e)
+
+    def index_announcement_by_id(self, ann_id: int) -> None:
+        """Re-index a single announcement in the vector store."""
+        from app.db import SessionLocal
+        from sqlalchemy.orm import selectinload
+
+        try:
+            with SessionLocal() as db:
+                ann = db.execute(
+                    select(Announcement)
+                    .where(Announcement.id == ann_id)
+                    .options(selectinload(Announcement.club))
+                ).scalar_one_or_none()
+
+                if not ann or not ann.club:
+                    log.warning("index_announcement_by_id: announcement %s not found", ann_id)
+                    return
+
+                doc = self._announcement_document(ann, ann.club.name)
+                meta = {"type": "announcement", "entityId": str(ann.id), "clubId": str(ann.club_id), "title": ann.title}
+
+            emb = embed_texts([doc])[0]
+            vector_store.upsert(f"announcement:{ann_id}", doc, emb, meta)
+            log.info("Re-indexed announcement %s.", ann_id)
+        except Exception as e:  # noqa: BLE001
+            log.warning("index_announcement_by_id(%s) failed: %s", ann_id, e)
 
 
 knowledge_service = KnowledgeService()

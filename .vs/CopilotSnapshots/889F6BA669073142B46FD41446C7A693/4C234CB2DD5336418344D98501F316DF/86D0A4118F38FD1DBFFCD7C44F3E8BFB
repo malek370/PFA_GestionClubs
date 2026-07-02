@@ -1,0 +1,23 @@
+﻿{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "Kafka": {
+    "BootstrapServers": "localhost:9094",
+    "ProducerTopic": "user-promoted-to-club-admin",
+    "ConsumerTopic": "user-registered",
+    "ConsumerGroupId": "gestion-clubs-group",
+    "ProducerTopicMember": "user-promoted-to-club-member"
+  },
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=localhost\\SQLEXPRESS;Database=GestionClubs;TrustServerCertificate=True;Trusted_Connection=True;"
+  },
+  "IdentityProvider": {
+    "Authority": "https://localhost:7253",
+    "Issuer": "IdentityProvider",
+    "Audience": "myappusers"
+  }
+}

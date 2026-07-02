@@ -10,3 +10,4 @@ chromadb>=0.5.0
 PyJWT==2.10.1
 cryptography>=3.4
 python-multipart==0.0.20
+confluent-kafka>=2.3.0

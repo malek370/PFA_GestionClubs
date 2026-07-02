@@ -68,6 +68,10 @@
       bash -c "
         kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic user-registered --partitions 1 --replication-factor 1 &&
         kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic user-promoted-to-club-admin --partitions 1 --replication-factor 1 &&
+        kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic user-promoted-to-club-member --partitions 1 --replication-factor 1 &&
+        kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic clubs-topic --partitions 1 --replication-factor 1 &&
+        kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic announcements-topic --partitions 1 --replication-factor 1 &&
+        kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic events-topic --partitions 1 --replication-factor 1 &&
         echo 'All topics created successfully'
       "
 
@@ -123,6 +127,10 @@
       Kafka__ProducerTopic: "user-promoted-to-club-admin"
       Kafka__ConsumerTopic: "user-registered"
       Kafka__ConsumerGroupId: "gestion-clubs-group"
+      Kafka__ProducerTopicMember: "user-promoted-to-club-member"
+      Kafka__ClubsTopic: "clubs-topic"
+      Kafka__AnnouncementsTopic: "announcements-topic"
+      Kafka__EventsTopic: "events-topic"
       ConnectionStrings__DefaultConnection: "Server=sqlserver-clubs;Database=GestionClubs;User Id=sa;Password=YourStr0ngP@ssword!;TrustServerCertificate=True;"
       IdentityProvider__Authority: "https://identityprovider:8443"
       IdentityProvider__Issuer: "myapp"
@@ -146,7 +154,53 @@
       kafka:
         condition: service_healthy
 
+  postgres-chatbot:
+    image: pgvector/pgvector:pg16
+    container_name: uniclubs-postgres
+    environment:
+      POSTGRES_USER: uniclubs
+      POSTGRES_PASSWORD: uniclubs
+      POSTGRES_DB: uniclubs
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata-chatbot:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U uniclubs"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  chatbot:
+    build:
+      context: ./Chatbot
+      dockerfile: Dockerfile
+    image: mbokri/chatbot:latest
+    container_name: uniclubs-chatbot
+    ports:
+      - "8083:8083"
+    depends_on:
+      postgres-chatbot:
+        condition: service_healthy
+      init-kafka:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: "postgresql+psycopg://uniclubs:uniclubs@postgres-chatbot:5432/uniclubs"
+      GEMINI_API_KEY: "${GEMINI_API_KEY}"
+      KAFKA_ENABLED: "true"
+      KAFKA_BOOTSTRAP_SERVERS: "kafka:29092"
+      KAFKA_CONSUMER_GROUP_ID: "chatbot-group"
+      IDP_JWKS_URL: "https://identityprovider:8443/.well-known/jwks"
+      IDP_VERIFY_SSL: "false"
+      JWT_ISSUER: "myapp"
+      JWT_AUDIENCE: "myappusers"
+      CHROMA_PATH: "/app/chroma_data"
+    volumes:
+      - chroma-data:/app/chroma_data
+
 volumes:
   sqldata-idp:
   sqldata-clubs:
   keys:
+  pgdata-chatbot:
+  chroma-data:

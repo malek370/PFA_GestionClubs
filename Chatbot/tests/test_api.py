@@ -53,7 +53,7 @@ def client():
 
 def _admin_token() -> str:
     return jwt.encode(
-        {"sub": "admin-1", "role": ["ADMIN"], "iss": "IdentityProvider", "aud": "myappusers"},
+        {"sub": "admin-1", "role": ["PlatformAdmin"], "iss": "IdentityProvider", "aud": "myappusers"},
         TEST_PRIVATE_KEY,
         algorithm="RS256",
     )

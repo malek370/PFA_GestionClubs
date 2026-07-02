@@ -33,8 +33,20 @@ class Settings(BaseSettings):
 
     # Security — RSA/RS256: public key fetched from IdentityProvider JWKS endpoint
     idp_jwks_url: str = "http://localhost:7253/.well-known/jwks"
+    idp_verify_ssl: bool = True  # set False when IdP uses a self-signed cert (containers)
     jwt_issuer: str = "IdentityProvider"
     jwt_audience: str = "myappusers"
+
+    # Kafka consumer
+    kafka_enabled: bool = True
+    kafka_bootstrap_servers: str = "localhost:9092"
+    kafka_consumer_group_id: str = "chatbot-group"
+    kafka_topics_user_registered: str = "user-registered"
+    kafka_topics_clubs: str = "clubs-topic"
+    kafka_topics_announcements: str = "announcements-topic"
+    kafka_topics_events: str = "events-topic"
+    kafka_topics_user_promoted_admin: str = "user-promoted-to-club-admin"
+    kafka_topics_user_promoted_member: str = "user-promoted-to-club-member"
 
 
 @lru_cache

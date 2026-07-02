@@ -8,5 +8,8 @@ namespace GestionClubs.Infrastructure.Kafka
         public string ConsumerTopic { get; set; } = string.Empty;
         public string ConsumerGroupId { get; set; } = string.Empty;
         public string ProducerTopicMember { get; set; } = string.Empty;
+        public string ClubsTopic { get; set; } = "clubs-topic";
+        public string AnnouncementsTopic { get; set; } = "announcements-topic";
+        public string EventsTopic { get; set; } = "events-topic";
     }
 }
