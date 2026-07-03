@@ -65,6 +65,17 @@ builder.Services.AddScoped<IEventService>(sp =>
     ));
 builder.Services.AddExceptionHandler<GlobalExcpectionHandler>();
 builder.Services.Configure<KafkaOptions>(builder.Configuration.GetSection(KafkaOptions.SectionName));
+
+// CORS
+var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? ["http://localhost:3000", "http://localhost:5173", "http://localhost:4200"];
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+        policy.WithOrigins(allowedOrigins)
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials());
+});
 builder.Services.AddSingleton<IKafkaProducer, KafkaProducer>();
 builder.Services.AddHostedService<UserRegisteredConsumer>();
 
@@ -128,7 +139,7 @@ builder.Services.AddAuthorizationBuilder()
     .AddPolicy(AppRoles.PlatformAdmin, policy => policy.RequireRole(AppRoles.PlatformAdmin))
     .AddPolicy(AppRoles.ClubAdmin, policy => policy.RequireRole(AppRoles.ClubAdmin))
     .AddPolicy(AppRoles.ClubMember, policy => policy.RequireRole([AppRoles.ClubMember, AppRoles.ClubAdmin]))
-    .AddPolicy(AppRoles.Visitor, policy => policy.RequireRole([AppRoles.Visitor, AppRoles.ClubAdmin, AppRoles.ClubMember]));
+    .AddPolicy(AppRoles.Visitor, policy => policy.RequireRole([AppRoles.Visitor, AppRoles.ClubAdmin, AppRoles.ClubMember, AppRoles.PlatformAdmin]));
                                 
 
 
@@ -160,6 +171,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 app.UseExceptionHandler(_ => { });
+app.UseCors("AllowFrontend");
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

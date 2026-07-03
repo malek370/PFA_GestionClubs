@@ -1,6 +1,7 @@
 FROM python:3.12-slim
 
 WORKDIR /app
+ENV PYTHONPATH=/app
 
 # System deps for psycopg (libpq) and build tools
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -15,4 +16,4 @@ COPY . .
 
 EXPOSE 8083
 
-CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8083"]
+CMD ["sh", "-c", "alembic upgrade head && python -m scripts.seed && uvicorn app.main:app --host 0.0.0.0 --port 8083"]

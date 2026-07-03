@@ -1,10 +1,10 @@
-name: IdentityProvider CI/CD Pipeline Quick and Dirty
+name: ApiGateway CI/CD Pipeline
 
 on:
   push:
-    branches: [ "IdentityProvider" ]
+    branches: [ "main" ]
     paths:
-      - 'IdentityProvider/**'
+      - 'ApiGateway/**'
 
 
 concurrency:
@@ -15,10 +15,9 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' 
     defaults:
       run:
-        working-directory: IdentityProvider
+        working-directory: ApiGateway
 
     steps:
       - name: Checkout Repository
@@ -33,7 +32,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
-          key: nuget-${{ runner.os }}-${{ hashFiles('IdentityProvider/*.csproj') }}
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/ApiGateway/**/*.csproj') }}
           restore-keys: |
             nuget-${{ runner.os }}-
 
@@ -47,12 +46,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-output
-          path: IdentityProvider/bin/
+          path: ApiGateway/bin/
+
   docker-push:
     name: Dockerize and Push
     needs: build
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'
 
     steps:
       - name: Checkout Repository
@@ -67,8 +66,8 @@ jobs:
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v5
         with:
-          context: ./IdentityProvider
+          context: ./ApiGateway
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/identityprovider:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/identityprovider:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/apigateway:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/apigateway:${{ github.sha }}
