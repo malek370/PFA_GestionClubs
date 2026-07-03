@@ -142,6 +142,30 @@
     volumes:
       - ./certs:/https:ro
 
+  apigateway:
+    build:
+      context: ./ApiGateway/ApiGateway
+      dockerfile: ApiGateway/Dockerfile
+    image: mbokri/apigateway:latest
+    ports:
+      - "5000:8080"   # HTTP
+      - "5001:8081"   # HTTPS
+    depends_on:
+      identityprovider:
+        condition: service_started
+      gestionclubs:
+        condition: service_started
+      chatbot:
+        condition: service_started
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_URLS: "https://+:8081;http://+:8080"
+      ASPNETCORE_Kestrel__Certificates__Default__Path: "/https/aspnetapp.crt"
+      ASPNETCORE_Kestrel__Certificates__Default__KeyPath: "/https/aspnetapp.key"
+    volumes:
+      - ./certs:/https:ro
+      
+
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
     container_name: kafka-ui

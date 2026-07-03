@@ -1,7 +1,7 @@
-#!/bin/sh
+﻿#!/bin/sh
 echo "Waiting 20 seconds for SQL Server to start..."
 sleep 20
-# G�n�rer les cl�s RSA si elles n'existent pas
+# Gï¿½nï¿½rer les clï¿½s RSA si elles n'existent pas
 if [ ! -f /app/keys/private_key.pem ] || [ ! -f /app/keys/public_key.pem ]; then
   echo "Generating RSA keys..."
   openssl genrsa -out /app/keys/private_key.pem 2048
@@ -9,7 +9,7 @@ if [ ! -f /app/keys/private_key.pem ] || [ ! -f /app/keys/public_key.pem ]; then
     openssl rsa -pubin -RSAPublicKey_out -out /app/keys/public_key.pem
 fi
 
-# Cr�er des liens symboliques dans /app
+# Crï¿½er des liens symboliques dans /app
 ln -sf /app/keys/private_key.pem /app/private_key.pem
 ln -sf /app/keys/public_key.pem /app/public_key.pem
 
