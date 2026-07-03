@@ -13,13 +13,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
-
+using Prometheus;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
-
+builder.Services.UseHttpClientMetrics();
 //add database service with SQL Server provider and connection string from appsettings.json
 builder.Services.AddInfrastructureServices_SqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 
@@ -172,7 +172,15 @@ if (app.Environment.IsDevelopment())
 }
 app.UseExceptionHandler(_ => { });
 app.UseCors("AllowFrontend");
-app.UseHttpsRedirection();
+app.UseMetricServer();
+app.UseHttpMetrics();
+
+// Skip HTTPS redirect for the /metrics scrape endpoint
+app.UseWhen(ctx => !ctx.Request.Path.StartsWithSegments("/metrics"), branch =>
+{
+    branch.UseHttpsRedirection();
+});
+
 
 app.UseAuthentication();
 app.UseAuthorization();

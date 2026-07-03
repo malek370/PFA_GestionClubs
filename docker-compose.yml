@@ -115,6 +115,9 @@
     ports:
       - "8081:8081"   # HTTPS
       - "8082:8080"   # HTTP
+    networks:
+      - default
+      - mynw
     depends_on:
       sqlserver-clubs:
         condition: service_healthy
@@ -221,10 +224,36 @@
       CHROMA_PATH: "/app/chroma_data"
     volumes:
       - chroma-data:/app/chroma_data
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    networks:
+      - mynw
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - mynw
 
+networks:
+  mynw:
+  
 volumes:
   sqldata-idp:
   sqldata-clubs:
   keys:
   pgdata-chatbot:
   chroma-data:
+  grafana-data:
