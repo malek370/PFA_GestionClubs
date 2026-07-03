@@ -69,9 +69,12 @@ def _handle_user_registered(payload: dict[str, Any]) -> None:
         if not existing:
             db.add(User(email=email, first_name=first_name, last_name=last_name))
             db.commit()
-            log.info("Kafka ▶ created User email=%s", email)
+            log.info("Kafka ▶ added User to DB email=%s", email)
         else:
-            log.debug("Kafka ▶ User email=%s already exists", email)
+            existing.first_name = first_name
+            existing.last_name = last_name
+            db.commit()
+            log.info("Kafka ▶ updated User in DB email=%s", email)
 
 
 def _handle_club_created(payload: dict[str, Any]) -> None:
@@ -88,15 +91,17 @@ def _handle_club_created(payload: dict[str, Any]) -> None:
 
     with SessionLocal() as db:
         club = db.get(Club, club_id)
+        action = "updated"
         if not club:
             db.add(Club(id=club_id, name=name, description=description))
+            action = "added"
         else:
             club.name = name
             club.description = description
         db.commit()
 
     knowledge_service.index_club_by_id(club_id)
-    log.info("Kafka ▶ upserted Club id=%s name=%s", club_id, name)
+    log.info("Kafka ▶ %s Club in DB id=%s name=%s", action, club_id, name)
 
 
 def _handle_announcement_created(payload: dict[str, Any]) -> None:
@@ -119,15 +124,17 @@ def _handle_announcement_created(payload: dict[str, Any]) -> None:
             return
 
         ann = db.get(Announcement, ann_id)
+        action = "updated"
         if not ann:
             db.add(Announcement(id=ann_id, club_id=club.id, title=title, content=content))
+            action = "added"
         else:
             ann.title = title
             ann.content = content
         db.commit()
 
     knowledge_service.index_announcement_by_id(ann_id)
-    log.info("Kafka ▶ upserted Announcement id=%s for club '%s'", ann_id, club_name)
+    log.info("Kafka ▶ %s Announcement in DB id=%s for club '%s'", action, ann_id, club_name)
 
 
 def _handle_event_created(payload: dict[str, Any]) -> None:
@@ -152,6 +159,7 @@ def _handle_event_created(payload: dict[str, Any]) -> None:
             return
 
         ev = db.get(Event, event_id)
+        action = "updated"
         if not ev:
             db.add(Event(
                 id=event_id,
@@ -161,6 +169,7 @@ def _handle_event_created(payload: dict[str, Any]) -> None:
                 location=location,
                 start_date=start_date,
             ))
+            action = "added"
         else:
             ev.title = title
             ev.description = description
@@ -169,7 +178,7 @@ def _handle_event_created(payload: dict[str, Any]) -> None:
         db.commit()
 
     knowledge_service.index_event_by_id(event_id)
-    log.info("Kafka ▶ upserted Event id=%s for club '%s'", event_id, club_name)
+    log.info("Kafka ▶ %s Event in DB id=%s for club '%s'", action, event_id, club_name)
 
 
 def _handle_user_promoted_member(payload: dict[str, Any]) -> None:
@@ -199,7 +208,9 @@ def _handle_user_promoted_member(payload: dict[str, Any]) -> None:
         if not existing:
             db.add(Member(club_id=club_id, user_id=user.id, post_in_club="Member"))
             db.commit()
-            log.info("Kafka ▶ created Member user=%s club=%s", email, club_id)
+            log.info("Kafka ▶ added Member to DB user=%s club=%s", email, club_id)
+        else:
+            log.info("Kafka ▶ Member already exists in DB user=%s club=%s", email, club_id)
 
     knowledge_service.index_club_by_id(club_id)
 
@@ -227,13 +238,13 @@ def _handle_user_promoted_admin(payload: dict[str, Any]) -> None:
         if member:
             member.post_in_club = "President"
             db.commit()
-            log.info("Kafka ▶ promoted user=%s to President in club=%s", email, club_id)
+            log.info("Kafka ▶ updated Member in DB user=%s to President in club=%s", email, club_id)
         else:
             # User may not have a member record yet; create it
             if db.get(Club, club_id):
                 db.add(Member(club_id=club_id, user_id=user.id, post_in_club="President"))
                 db.commit()
-                log.info("Kafka ▶ created President member user=%s club=%s", email, club_id)
+                log.info("Kafka ▶ added President Member to DB user=%s club=%s", email, club_id)
 
     knowledge_service.index_club_by_id(club_id)
 
@@ -333,6 +344,8 @@ class KafkaConsumerService:
                 except json.JSONDecodeError as exc:
                     log.error("Cannot parse message on topic '%s': %s", topic, exc)
                     continue
+
+                log.info("Kafka ▶ read message from topic='%s' key=%s", topic, msg.key())
 
                 handler = _HANDLERS.get(topic)
                 if handler:
