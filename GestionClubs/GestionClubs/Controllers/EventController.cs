@@ -12,7 +12,7 @@ namespace GestionClubs.API.Controllers
         {
             var events = app.MapGroup("/api/events").WithTags("Events");
 
-            events.MapGet("/", async ([FromServices] IEventService eventService, [FromQuery(Name = "Tags")] string tags, [AsParameters] PaginationParams pagination) =>
+            events.MapGet("/", async ([FromServices] IEventService eventService, [FromQuery(Name = "Tags")] string? tags, [AsParameters] PaginationParams pagination) =>
             {
                 var tagList = string.IsNullOrEmpty(tags) ? null : tags.Split(';').ToList();
                 var result = await eventService.GetEvents(tagList, pagination);

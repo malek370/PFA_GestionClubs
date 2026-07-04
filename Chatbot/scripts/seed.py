@@ -972,10 +972,15 @@ FAQS = [
 
 
 def seed() -> None:
-    print("Dropping and recreating tables...")
-    Base.metadata.drop_all(engine)
-    Base.metadata.create_all(engine)
+    db = SessionLocal()
+    try:
+        if db.query(Club).first() is not None:
+            print("Database already seeded, skipping.")
+            return
+    finally:
+        db.close()
 
+    print("Seeding database...")
     db = SessionLocal()
     try:
         # --- Users ---

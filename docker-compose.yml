@@ -224,6 +224,17 @@
       CHROMA_PATH: "/app/chroma_data"
     volumes:
       - chroma-data:/app/chroma_data
+  uniclubclient:
+    build:
+      context: ../PFA_Client/uniclubClient
+      dockerfile: Dockerfile
+    image: mbokri/uniclubclient:latest
+    ports:
+      - "3001:80"
+    depends_on:
+      apigateway:
+        condition: service_started
+
   prometheus:
     image: prom/prometheus
     ports:

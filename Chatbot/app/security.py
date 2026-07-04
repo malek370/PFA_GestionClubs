@@ -57,18 +57,13 @@ def get_current_user(request: Request) -> CurrentUser:
     Absent/invalid tokens yield an anonymous user — the request continues
     unauthenticated, matching the behaviour of ``JwtAuthFilter``."""
     header = request.headers.get("Authorization")
-    print(f"print Authorization header: {header}")
-    log.info("log Authorization header: %s", header)
     if not header or not header.startswith("Bearer "):
-        log.info("No valid Authorization header found; returning anonymous user.")
+        log.debug("No valid Authorization header found; returning anonymous user.")
         return CurrentUser()
 
     token = header[7:]
-    log.info("Validating JWT: %s", token)
     settings = get_settings()
-    log.info("JWT issuer: %s, audience: %s", settings.jwt_issuer, settings.jwt_audience)
     try:
-        log.info("Fetching signing key from JWKS URL: %s", settings.idp_jwks_url)
         signing_key = _get_jwks_client().get_signing_key_from_jwt(token)
         claims = jwt.decode(
             token,
@@ -77,19 +72,16 @@ def get_current_user(request: Request) -> CurrentUser:
             issuer=settings.jwt_issuer,
             audience=settings.jwt_audience,
         )
-        log.info("JWT validated successfully. Claims: %s", claims)
     except Exception as e:  # noqa: BLE001 — any failure (bad sig, expired, JWKS fetch) → anonymous
-        log.info("JWT validation failed: %s", e)
+        log.warning("JWT validation failed: %s", type(e).__name__)
         return CurrentUser()
 
     user_id = claims.get("sub") or "anonymous"
     # .NET maps ClaimTypes.Role → "role"; accept "roles" for test/legacy tokens
     role_claim_name = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'
-    raw_roles = claims.get("role") or claims.get("roles") or claims.get(role_claim_name)    
+    raw_roles = claims.get("role") or claims.get("roles") or claims.get(role_claim_name)
     roles = _normalize_roles(raw_roles)
-    print(f"Authenticated user {user_id} with roles {roles}")
-    print(f"Claims: {claims}")
-    log.info("Authenticated user %s with roles %s", user_id, roles)
+    log.info("JWT validated for user %s", user_id)
     return CurrentUser(user_id=user_id, roles=roles, authenticated=True)
 
 

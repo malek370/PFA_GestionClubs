@@ -1,4 +1,4 @@
-﻿#!/bin/sh
+#!/bin/sh
 echo "Waiting 20 seconds for SQL Server to start..."
 sleep 20
 # Gï¿½nï¿½rer les clï¿½s RSA si elles n'existent pas
