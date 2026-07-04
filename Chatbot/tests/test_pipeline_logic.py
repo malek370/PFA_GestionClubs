@@ -78,10 +78,11 @@ def test_parse_llm_json_filters_incomplete_actions_and_falls_back():
     assert len(resp.suggestedActions) == 3
 
 
-def test_parse_llm_json_malformed_falls_back_to_plain_text():
+def test_parse_llm_json_malformed_returns_safe_escalation():
     svc = ChatbotService()
     raw = "ceci n'est pas du JSON"
     resp = svc._parse_llm_json(raw)
-    assert resp.answer == raw
-    assert resp.escalate is False
+    # Parse failure must NOT expose raw LLM text; it must escalate safely.
+    assert resp.escalate is True
+    assert raw not in resp.answer
     assert len(resp.suggestedActions) == 3

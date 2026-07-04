@@ -111,6 +111,7 @@ def _handle_announcement_created(payload: dict[str, Any]) -> None:
     ann_id = _get(payload, "AnnouncementId", "announcementId")
     title = _get(payload, "Title", "title", default="")
     content = _get(payload, "Content", "content", default="")
+    club_id = _get(payload, "ClubId", "clubId")
     club_name = _get(payload, "ClubName", "clubName", default="")
 
     if ann_id is None:
@@ -118,9 +119,17 @@ def _handle_announcement_created(payload: dict[str, Any]) -> None:
         return
 
     with SessionLocal() as db:
-        club = db.query(Club).filter(Club.name == club_name).first()
+        # Prefer ClubId from payload; fall back to name-based lookup.
+        if club_id is not None:
+            club = db.get(Club, club_id)
+        else:
+            club = db.query(Club).filter(Club.name == club_name).first() if club_name else None
+
         if not club:
-            log.warning("Kafka ▶ announcement: club '%s' not found in DB, skipping", club_name)
+            log.warning(
+                "Kafka ▶ announcement: club not found (id=%s name='%s'), skipping",
+                club_id, club_name,
+            )
             return
 
         ann = db.get(Announcement, ann_id)
@@ -134,7 +143,7 @@ def _handle_announcement_created(payload: dict[str, Any]) -> None:
         db.commit()
 
     knowledge_service.index_announcement_by_id(ann_id)
-    log.info("Kafka ▶ %s Announcement in DB id=%s for club '%s'", action, ann_id, club_name)
+    log.info("Kafka ▶ %s Announcement in DB id=%s for club '%s'", action, ann_id, club.name)
 
 
 def _handle_event_created(payload: dict[str, Any]) -> None:
@@ -146,6 +155,10 @@ def _handle_event_created(payload: dict[str, Any]) -> None:
     description = _get(payload, "Description", "description", default="")
     location = _get(payload, "Location", "location")
     start_date = _parse_dt(_get(payload, "StartDate", "startDate"))
+    is_public = bool(_get(payload, "IsPublic", "isPublic", default=True))
+    tags_raw = _get(payload, "Tags", "tags", default=[])
+    tags = list(tags_raw) if isinstance(tags_raw, (list, tuple)) else []
+    club_id = _get(payload, "ClubId", "clubId")
     club_name = _get(payload, "ClubName", "clubName", default="")
 
     if event_id is None:
@@ -153,9 +166,17 @@ def _handle_event_created(payload: dict[str, Any]) -> None:
         return
 
     with SessionLocal() as db:
-        club = db.query(Club).filter(Club.name == club_name).first()
+        # Prefer ClubId from payload; fall back to name-based lookup.
+        if club_id is not None:
+            club = db.get(Club, club_id)
+        else:
+            club = db.query(Club).filter(Club.name == club_name).first() if club_name else None
+
         if not club:
-            log.warning("Kafka ▶ event: club '%s' not found in DB, skipping", club_name)
+            log.warning(
+                "Kafka ▶ event: club not found (id=%s name='%s'), skipping",
+                club_id, club_name,
+            )
             return
 
         ev = db.get(Event, event_id)
@@ -168,6 +189,8 @@ def _handle_event_created(payload: dict[str, Any]) -> None:
                 description=description,
                 location=location,
                 start_date=start_date,
+                is_public=is_public,
+                tags=tags,
             ))
             action = "added"
         else:
@@ -175,10 +198,12 @@ def _handle_event_created(payload: dict[str, Any]) -> None:
             ev.description = description
             ev.location = location
             ev.start_date = start_date
+            ev.is_public = is_public
+            ev.tags = tags
         db.commit()
 
     knowledge_service.index_event_by_id(event_id)
-    log.info("Kafka ▶ %s Event in DB id=%s for club '%s'", action, event_id, club_name)
+    log.info("Kafka ▶ %s Event in DB id=%s for club '%s'", action, event_id, club.name)
 
 
 def _handle_user_promoted_member(payload: dict[str, Any]) -> None:
@@ -307,7 +332,7 @@ class KafkaConsumerService:
             "bootstrap.servers": settings.kafka_bootstrap_servers,
             "group.id": settings.kafka_consumer_group_id,
             "auto.offset.reset": "earliest",
-            "enable.auto.commit": True,
+            "enable.auto.commit": False,
             "session.timeout.ms": 10000,
             "heartbeat.interval.ms": 3000,
         })
@@ -351,15 +376,19 @@ class KafkaConsumerService:
                 if handler:
                     try:
                         handler(payload)
+                        # Commit only after successful handler execution.
+                        consumer.commit(message=msg, asynchronous=False)
                     except Exception as exc:  # noqa: BLE001
                         log.error(
-                            "Handler error for topic '%s' key=%s: %s",
+                            "Handler error for topic '%s' key=%s: %s — offset NOT committed",
                             topic,
                             msg.key(),
                             exc,
                             exc_info=True,
                         )
                 else:
+                    # No handler; commit to avoid reprocessing on restart.
+                    consumer.commit(message=msg, asynchronous=False)
                     log.debug("No handler registered for topic '%s'", topic)
         finally:
             consumer.close()

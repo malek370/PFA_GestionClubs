@@ -309,11 +309,14 @@ class ChatbotService:
                 actions = _default_suggestions()
             return ChatAskResponse(answer=answer, suggestedActions=actions, escalate=escalate)
         except Exception:  # noqa: BLE001
-            log.warning("Failed to parse LLM JSON, falling back to plain text. raw=%s", raw)
+            log.warning("Failed to parse LLM JSON; returning safe fallback. raw_length=%d", len(raw or ""))
             return ChatAskResponse(
-                answer=raw or "",
+                answer=(
+                    "I was unable to process the response. "
+                    "Would you like to be connected with a UniClubs support member?"
+                ),
                 suggestedActions=_default_suggestions(),
-                escalate=False,
+                escalate=True,
             )
 
 
